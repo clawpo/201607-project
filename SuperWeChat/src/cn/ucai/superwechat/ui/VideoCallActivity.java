@@ -40,7 +40,7 @@ import com.hyphenate.chat.EMCallManager.EMVideoCallHelper;
 import com.hyphenate.chat.EMCallStateChangeListener;
 import com.hyphenate.chat.EMClient;
 import cn.ucai.superwechat.DemoHelper;
-import com.hyphenate.chatuidemo.R;
+import cn.ucai.superwechat.R;
 import com.hyphenate.media.EMLocalSurfaceView;
 import com.hyphenate.media.EMOppositeSurfaceView;
 import com.hyphenate.util.PathUtil;
