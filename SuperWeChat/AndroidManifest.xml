@@ -76,7 +76,6 @@
         <activity
             android:name="cn.ucai.superwechat.ui.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide"
             android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
 
