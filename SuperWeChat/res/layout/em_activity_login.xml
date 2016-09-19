@@ -76,7 +76,7 @@
             android:layout_height="42dp"
             android:layout_marginTop="40dp"
             android:background="@drawable/btn_enable_green"
-            android:enabled="false"
+            android:enabled="true"
             android:paddingBottom="7dp"
             android:paddingTop="7dp"
             android:text="@string/login_btn_action"

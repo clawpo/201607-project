@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,8 @@ public class LoginActivity extends BaseActivity {
     public static final int REQUEST_CODE_SETNICK = 1;
     @BindView(R.id.txt_title)
     TextView txtTitle;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     @BindView(R.id.et_username)
     EditText etUsername;
     @BindView(R.id.et_password)
@@ -97,6 +100,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initView() {
+        imgBack.setVisibility(View.GONE);
         txtTitle.setText(getString(R.string.login));
         if (SuperWeChatHelper.getInstance().getCurrentUsernName() != null) {
             etUsername.setText(SuperWeChatHelper.getInstance().getCurrentUsernName());
