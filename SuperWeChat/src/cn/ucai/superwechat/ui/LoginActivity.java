@@ -39,6 +39,7 @@ import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.db.DemoDBManager;
+import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * Login screen
@@ -100,7 +101,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initView() {
-        imgBack.setVisibility(View.GONE);
+        imgBack.setVisibility(View.VISIBLE);
         txtTitle.setText(getString(R.string.login));
         if (SuperWeChatHelper.getInstance().getCurrentUsernName() != null) {
             etUsername.setText(SuperWeChatHelper.getInstance().getCurrentUsernName());
@@ -222,15 +223,18 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.btn_login, R.id.btn_register})
+    @OnClick({R.id.btn_login, R.id.btn_register,R.id.img_back})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
                 login();
                 break;
             case R.id.btn_register:
-                register();
+                MFGT.gotoRegister(this);
                 break;
+			case R.id.img_back:
+                MFGT.finish(this);
+				break;
         }
     }
 }

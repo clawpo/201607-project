@@ -16,7 +16,6 @@ package cn.ucai.superwechat.ui;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * register screen
@@ -59,7 +59,6 @@ public class RegisterActivity extends BaseActivity {
         setContentView(R.layout.em_activity_register);
         ButterKnife.bind(this);
         initView();
-        Log.e("main", "oncreate.....");
     }
 
     private void initView() {
@@ -134,15 +133,11 @@ public class RegisterActivity extends BaseActivity {
         }
     }
 
-    public void back() {
-        finish();
-    }
-
     @OnClick({R.id.img_back, R.id.btn_register})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                back();
+                MFGT.finish(this);
                 break;
             case R.id.btn_register:
                 register();
