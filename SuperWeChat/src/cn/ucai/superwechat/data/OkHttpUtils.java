@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -242,23 +241,19 @@ public class OkHttpUtils<T> {
         if (mUrl == null) {
             return this;
         }
-        try {
-
-            if (mUrl.indexOf("?") == -1) {
-                mUrl.append("?").append(key).append("=").append(URLEncoder.encode(value,UTF_8));
-            } else {
-                mUrl.append("&").append(key).append("=").append(URLEncoder.encode(value,UTF_8));
-            }
-        }catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (mUrl.indexOf(I.QUESTION) == -1) {
+            mUrl.append(I.QUESTION).append(key).append(I.EQUAL).append(value);
+        } else {
+            mUrl.append(I.AND).append(key).append(I.EQUAL).append(value);
         }
         return this;
     }
 
 
     public OkHttpUtils<T> setRequestUrl(String request) {
+        //http://120.26.242.249:8080/SuperWeChatServerV2.0/register?m_user_name=aaaaaa&m_user_nick=aaaaaa&m_user_password=aaaaaa
         mUrl = new StringBuilder(I.SERVER_ROOT);
-        mUrl.append(I.QUESTION).append(I.KEY_REQUEST).append(I.EQUAL).append(request);
+        mUrl.append(request);
 //        Log.e("okhttp","1 murl="+ mUrl.toString());
         return this;
     }

@@ -133,7 +133,7 @@ public interface I {
 	/** 用户姓名或hxid */
 	String NAME_OR_HXID                             =       "name_or_hxid";
 	/** 服务器状态的请求 */
-	String REQUEST_SERVERSTATUS 					= 		"server_status";
+	String REQUEST_SERVERSTATUS 					= 		"getServerStatus";
 	/** 客户端发送的注册请求 */
 	String REQUEST_REGISTER		 					= 		"register";
 	/**  发送取消注册的请求 */
