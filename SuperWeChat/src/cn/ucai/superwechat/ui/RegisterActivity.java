@@ -138,12 +138,13 @@ public class RegisterActivity extends BaseActivity {
         return file;
     }
     private void registerAppServer() {
-        OkHttpUtils<Result> utils = new OkHttpUtils<>();
+        OkHttpUtils<Result> utils = new OkHttpUtils<>(this);
         utils.setRequestUrl(I.REQUEST_REGISTER)
                 .addParam(I.User.USER_NAME,username)
                 .addParam(I.User.NICK,nickname)
                 .addParam(I.User.PASSWORD,pwd)
-                .addFile2(saveBitmapFile())
+                .post()
+//                .addFile2(saveBitmapFile())
                 .targetClass(Result.class)
                 .execute(new OkHttpUtils.OnCompleteListener<Result>() {
                     @Override

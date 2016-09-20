@@ -1,254 +1,222 @@
 package cn.ucai.superwechat.data;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.FileNameMap;
-import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.bean.Result;
+import cn.ucai.superwechat.utils.L;
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 
 /**
- *  * OkHttp框架的二次封装
- * 具有以下功能：
- * 1、下载解析json数据，可根据指定的类型自动转换为相应的实体类或数组
- * 2、上传文件
- * 3、下载文件，当下载文件直接由服务端读写，则可以实现更新下载进度的效果。
- * 没有图片下载、二级缓存的功能。
+ * Created by yao on 2016/9/16.
  *
- * Created by yao on 2016/5/16.
- * 1.增加两个重载的downloadFile方法，一个用于更新下载进度，一个不更新下载进度。
- * 2.在initHandler方法中增加对下载状态的响应。
- * 3.在execute方法中增加对url中request的检查。
  */
 public class OkHttpUtils<T> {
     private static String UTF_8 = "utf-8";
-    /** 解析成功的消息 */
-    private static final int RESULT_SUCCESS = 0;
-    /** 解析失败的消息 */
-    private static final int RESULT_ERROR = 1;
+    public static final int RESULT_SUCCESS = 0;
+    public static final int RESULT_ERROR = 1;
+    public static final int DOWNLOAD_START=2;
+    public static final int DOWNLOADING=3;
+    public static final int DOWNLOAD_FINISH=4;
 
-    /**下载进度的消息 */
-    public static final int DOWNLOADING_PERCENT = 2;
-    /** 下载开始的消息 */
-    public static final int DOWNLOADING_START = 3;
-    /** 下载结束的消息 */
-    public static final int DOWNLOADING_FINISH = 4;
-
-    /** mokHttpClient必须保持单例，这样能在一个队列里执行多个请求。
-     * 但在Activity等组件的onDestroy方法中要调用close方法释放mOkHttpClient引用的对象 */
     private static OkHttpClient mOkHttpClient;
-    /** 工作线程与主线程通信*/
-    Handler mHandler;
-
-    /** 解析的目标类对象 */
-    Class<T> mClazz;
-
-    /** 上传文件 */
-    RequestBody mFileBody;
-
-    /** 在工作线程中下载文件 */
-    Callback mCallback;
-
-    /** 保存主线程处理结果的代码*/
-    OnCompleteListener<T> mListener;
-
-    /** 用于存放服务端根地址和请求参数 */
-    private StringBuilder mUrl;
+    private Handler mHandler;
 
     /**
-     * 主线程执行的代码块，用于处理工作线程的结果
-     * @param <T>
+     * 存放post请求的实体，实体中存放File类型的文件
      */
+    RequestBody mFileBody;
+    FormBody.Builder mFormBodyBuilder;
+    MultipartBody.Builder mMultipartBodyBuilder;
+
     public interface OnCompleteListener<T> {
-        /**处理成功返回结果*/
         void onSuccess(T result);
 
-        /**处理返回失败的结果*/
         void onError(String error);
     }
 
-    /**执行本构造方法后，别忘了在当前组件的onDestroy方法中调用
-     * OkHttpUtils.release()
+    private OnCompleteListener<T> mListener;
+
+    OkHttpClient.Builder mBuilder;
+    /**
+     * 构造器，mOkHttpClient必须单例，无论创建多少个OkHttpUtils的实例。
+     * 都由mOkHttpClient一个对象处理所有的网络请求。
      */
-    public OkHttpUtils() {
-        if (mOkHttpClient == null) {//mOkHttpClient单例
-            mOkHttpClient = new OkHttpClient();
+    public OkHttpUtils(Context context) {
+        if (mOkHttpClient == null) {//线程安全的单例
+            synchronized (OkHttpUtils.class) {
+                if (mOkHttpClient == null) {
+                    mBuilder = new OkHttpClient.Builder();
+                    //获取sd卡的缓存文件夹
+                    File cacheDir = context.getExternalCacheDir();
+                    mOkHttpClient = mBuilder
+                            .connectTimeout(10, TimeUnit.SECONDS)
+                            .writeTimeout(20,TimeUnit.SECONDS)
+                            .readTimeout(10,TimeUnit.SECONDS)
+                            .cache(new Cache(cacheDir,10*(1<<20)))//设置缓存位置和缓存大小
+                            .build();
+                }
+            }
         }
         initHandler();
     }
 
-    /**初始化mHandler*/
+    /**
+     * 设置与服务端连接的时限
+     * @param connectTime:连接的时限
+     * @return
+     */
+    public OkHttpUtils<T> connectTimeout(int connectTime) {
+        if (mBuilder == null) {
+            return this;
+        }
+        mBuilder.connectTimeout(connectTime, TimeUnit.SECONDS);
+        return this;
+    }
+
+    /**
+     * 设置写数据的时限
+     * @param writeTimeout：写数据的时限
+     * @return
+     */
+    public OkHttpUtils<T> writeTimeout(int writeTimeout) {
+        if (mBuilder == null) {
+            return this;
+        }
+        mBuilder.writeTimeout(writeTimeout, TimeUnit.SECONDS);
+        return this;
+    }
+
+    /**
+     * 设置读取数据的时限
+     * @param readTimeout：读取数据的时限
+     * @return
+     */
+    public OkHttpUtils<T> readTimeout(int readTimeout) {
+        if (mBuilder == null) {
+            return this;
+        }
+        mBuilder.readTimeout(readTimeout, TimeUnit.SECONDS);
+        return this;
+    }
+
+    /**
+     * 设置缓存
+     * 第一次请求会请求网络得到数据，第二次以及后面的请求则会从缓存中取出数据
+     * @param file:缓存的路径
+     * @param fileSize：缓存的容量
+     * @return
+     */
+    public OkHttpUtils<T> cache(File file, int fileSize) {
+        if (mBuilder == null) {
+            return this;
+        }
+        mBuilder.cache(new Cache(file, fileSize));
+        return this;
+    }
+
+
     private void initHandler() {
         mHandler = new Handler(SuperWeChatApplication.applicationContext.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
+                    case RESULT_ERROR:
+                        mListener.onError(msg.obj.toString());
+                        break;
                     case RESULT_SUCCESS:
-                        T obj = (T) msg.obj;//获得解析的结果
-                        if(mListener!=null) {
-                            mListener.onSuccess(obj);//回调解析成功的代码
-                        }
-                        break;
-                    case RESULT_ERROR://
-                        if(mListener!=null && msg.obj!=null) {
-                            Log.e("main","obj="+msg);
-                            mListener.onError(msg.obj.toString());//回调解析失败的代码
-                        }
-                        break;
-                    case DOWNLOADING_START:
-                    case DOWNLOADING_FINISH:
-                    case DOWNLOADING_PERCENT:
-                        if(mListener!=null) {
-                            mListener.onSuccess((T) msg);//回调下载开始、结束和更新进度的代码
-                        }
+                        T result = (T) msg.obj;
+                        mListener.onSuccess(result);
                         break;
                 }
             }
         };
     }
 
-    /**发送请求，
-     * @param listener:保存处理返回结果的代码
+    /**
+     * 用post请求，添加一个文件
+     * @param file:添加至form的文件
+     * @return
      */
-    public void execute(OnCompleteListener<T> listener) {
-        if (listener != null) {
-            mListener = listener;
-        }
-        if (mClazz == null && mCallback == null) {
-            Message msg = Message.obtain();
-            msg.what = RESULT_ERROR;
-            msg.obj = "忘记调用targetClass()啦";
-            Log.e("main", msg.obj.toString());
-            mHandler.sendMessage(msg);
-            return;
-        }
+    public OkHttpUtils<T> addFile(File file) {
+        mFileBody = RequestBody.create(null, file);
+        return this;
+    }
 
-        Request.Builder builder = new Request.Builder().url(mUrl.toString());
-        Log.e("okhttp","murl="+mUrl);
-        Request request;
-        if (mFileBody != null) {//上传文件
-            request = builder.post(mFileBody).build();
-        } else {//非下载文件，包括上传文件和json解析
-            request = builder.build();
-        }
-        //创建请求任务
-        Call call = mOkHttpClient.newCall(request);
-        if (mCallback != null) {//若是下载文件
-            call.enqueue(mCallback);//执行程序员自己写的下载文件的代码
-            return;
-        }
-//        //非下载文件场景，检查url中是否含有request参数
-//        if (mUrl.indexOf("request") == -1) {
-//            Message msg=Message.obtain();
-//            msg.what=RESULT_ERROR;
-//            msg.obj = "是否忘记设置request参数";
-//            sendMessage(msg);
+    /**
+     * 支持设置媒体文件类型的addFile
+     * @param type：媒体类型
+     * @param file：添加至form的文件
+     * @return
+     */
+    public OkHttpUtils<T> addFile(String type, File file) {
+        mFileBody = RequestBody.create(MediaType.parse(type), file);
+        return this;
+    }
+
+//    public OkHttpUtils<T> addFile2(File file) {
+//        if (mUrl == null) {
+//            return this;
 //        }
-        //否则，执行解析服务端返回的json数据的请求
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Message msg = Message.obtain();
-                msg.what = RESULT_ERROR;
-                msg.obj = e.getMessage();
-                mHandler.sendMessage(msg);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                String text = response.body().string();
-                if(mClazz.equals(String.class)){
-                    Message msg = Message.obtain();
-                    msg.what = RESULT_SUCCESS;
-                    msg.obj = text;
-                    mHandler.sendMessage(msg);
-                }else{
-                    Gson gson = new Gson();
-                    T obj = gson.fromJson(text, mClazz);
-                    Message msg = Message.obtain();
-                    msg.what = RESULT_SUCCESS;
-                    msg.obj = obj;
-                    mHandler.sendMessage(msg);
-                }
-            }
-        });
-    }
+//        RequestBody fileBody = RequestBody.create(MediaType.parse(guessMimeType(file.getName())), file);
+//
+//        mFileBody = new MultipartBuilder()
+//                .type(MultipartBuilder.FORM)
+//                .addPart(Headers.of("Content-Disposition","form-data; name=\"file\";filename=\""+file.getName()+"\""), fileBody)
+//                .build();
+//        return this;
+//    }
+//    private String guessMimeType(String path) {
+//        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+//        String contentTypeFor = fileNameMap.getContentTypeFor(path);
+//        if (contentTypeFor == null)
+//        {
+//            contentTypeFor = "application/octet-stream";
+//        }
+//        return contentTypeFor;
+//    }
 
     /**
-     * 设置解析的目标类堆笑
-     *
-     * @param clazz
+     * 设置为post的请求
      * @return
      */
-    public OkHttpUtils<T> targetClass(Class<T> clazz) {
-        mClazz = clazz;
+    public OkHttpUtils<T> post() {
+        mFormBodyBuilder = new FormBody.Builder();
         return this;
     }
 
-    /**
-     * iso8859-1的文本转换为utf-8的文本
-     *
-     * @param iso
-     * @return
-     */
-    public static String iso2utf8(String iso) {
-        try {
-            String utf8 = new String(iso.getBytes("iso8859-1"), "utf-8");
-            return utf8;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return iso;
-    }
+    StringBuilder mUrl;
 
-
-    /**获取服务端根地址
-     * @param rootUrl:
-     */
-    public OkHttpUtils<T> url(String rootUrl) {
-        this.mUrl = new StringBuilder(rootUrl);
+    public OkHttpUtils<T> url(String url) {
+        mUrl = new StringBuilder(url);
         return this;
     }
-
-    /**
-     * 添加请求参数
-     * @param key:请求的键
-     * @param value：请求的值
-     */
-    public OkHttpUtils<T> addParam(String key, String value) {
-        if (mUrl == null) {
-            return this;
-        }
-        if (mUrl.indexOf(I.QUESTION) == -1) {
-            mUrl.append(I.QUESTION).append(key).append(I.EQUAL).append(value);
-        } else {
-            mUrl.append(I.AND).append(key).append(I.EQUAL).append(value);
-        }
-        return this;
-    }
-
 
     public OkHttpUtils<T> setRequestUrl(String request) {
         //http://120.26.242.249:8080/SuperWeChatServerV2.0/register?m_user_name=aaaaaa&m_user_nick=aaaaaa&m_user_password=aaaaaa
@@ -258,176 +226,254 @@ public class OkHttpUtils<T> {
         return this;
     }
 
-    public OkHttpUtils<T> addFile2(File file) {
-        if (mUrl == null) {
-            return this;
-        }
-        RequestBody fileBody = RequestBody.create(MediaType.parse(guessMimeType(file.getName())), file);
+    /**
+     * 用于json解析的类对象
+     */
+    Class<T> mClazz;
 
-        mFileBody = new MultipartBuilder()
-                .type(MultipartBuilder.FORM)
-                .addPart(Headers.of("Content-Disposition","form-data; name=\"file\";filename=\""+file.getName()+"\""), fileBody)
-                .build();
+    /**
+     * 设置json解析的目标类对象
+     * @param clazz:解析的类对象
+     * @return
+     */
+    public OkHttpUtils<T> targetClass(Class<T> clazz) {
+        mClazz = clazz;
         return this;
-    }
-    public OkHttpUtils<T> addFile(File file) {
-        if (mUrl == null) {
-            return this;
-        }
-        mFileBody = RequestBody.create(null, file);
-        return this;
-    }
-
-    private String guessMimeType(String path)
-    {
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        String contentTypeFor = fileNameMap.getContentTypeFor(path);
-        if (contentTypeFor == null)
-        {
-            contentTypeFor = "application/octet-stream";
-        }
-        return contentTypeFor;
     }
 
     /**
-     *  设置工作线程中执行的代码，如文件下载。
-     *  用于代替缺省的下载解析json的execute中的Callback
-     * @param callback:工作线程中执行的代码
+     * 添加请求参数至url，包括GET和POST请求
+     * 不包括POST请求中上传文件的同时向Form中添加其它参数的情况
+     * @param key:键
+     * @param value：值
+     */
+    public OkHttpUtils<T> addParam(String key, String value) {
+        try {
+            //post请求的request参数也要拼接到url中
+            if (mFormBodyBuilder != null) {//post请求的参数添加方式
+                mFormBodyBuilder.add(key, URLEncoder.encode(value, UTF_8));
+            } else {//get请求的参数添加方式
+                if (mUrl.indexOf("?") == -1) {
+                    mUrl.append("?");
+                } else {
+                    mUrl.append("&");
+                }
+                mUrl.append(key).append("=").append(URLEncoder.encode(value, UTF_8));
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    /**
+     * * post请求,上传文件的同时允许在Form中添加多个参数
+     * @param key:参数的键
+     * @param value：参数的值
+     * @return
+     */
+    public OkHttpUtils<T> addFormParam(String key, String value) {
+        if (mMultipartBodyBuilder == null) {
+            mMultipartBodyBuilder =new MultipartBody.Builder();
+            mMultipartBodyBuilder.setType(MultipartBody.FORM);
+            try {
+                mUrl.append("?")
+                        .append(key)
+                        .append("=")
+                        .append(URLEncoder.encode(value, UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }else if (mUrl.indexOf("?") > -1) {
+            mMultipartBodyBuilder.addFormDataPart(key, value);
+        }
+        return this;
+    }
+
+    /**
+     * post请求中在Form中添加包含上传文件的多个参数
+     * @param name:文件的大类型
+     * @param fileName：文件名包括扩展名
+     * @param mediaType：文件的媒体类型
+     * @param file：文件
+     * @return
+     */
+    public OkHttpUtils<T> addFormParam(String name, String fileName, String mediaType, File file) {
+        if (mMultipartBodyBuilder == null) {
+            return this;
+        }
+        mMultipartBodyBuilder.addFormDataPart(name, fileName, RequestBody.create(MediaType.parse(mediaType), file));
+        return this;
+    }
+
+    /**
+     * 发送请求
+     * @param listener：处理服务端返回结果的代码
+     */
+    public void execute(OnCompleteListener<T> listener) {
+        if (listener != null) {
+            mListener = listener;
+        }
+        Request.Builder builder = new Request.Builder().url(mUrl.toString());
+        L.e("url="+mUrl);
+        if (mFormBodyBuilder != null) {
+            RequestBody body = mFormBodyBuilder.build();
+            builder.post(body);
+        }
+        if (mFileBody != null) {
+            builder.post(mFileBody);
+        }
+        //如果是post请求向Form中添加多个参数
+        if (mMultipartBodyBuilder != null) {
+            MultipartBody multipartBody = mMultipartBodyBuilder.build();
+            builder.post(multipartBody);
+        }
+        //创建请求
+        Request request = builder.build();
+        Call call = mOkHttpClient.newCall(request);
+        if (mCallback != null) {
+            call.enqueue(mCallback);
+            return;
+        }
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Message msg = Message.obtain();
+                msg.what = RESULT_ERROR;
+                msg.obj = e.getMessage();
+                mHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                Gson gson = new Gson();
+                T value = gson.fromJson(json, mClazz);
+                Message msg = Message.obtain();
+                msg.what = RESULT_SUCCESS;
+                msg.obj = value;
+                mHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    Callback mCallback;
+    /**
+     * 在OkHttp创建的工作线程中执行一段代码,
+     * @param callback
      * @return
      */
     public OkHttpUtils<T> doInBackground(Callback callback) {
-        mCallback = callback;
-        return this;
-    }
-
-    /**工作线程之前，主线程中执行的代码
-     * @param runnable:存放主线程中执行的代码块
-     */
-    public OkHttpUtils<T> onPreExecute(Runnable runnable) {
-        if (runnable != null) {
-            runnable.run();
-        }
-        return this;
-    }
-
-    /**execute中执行的工作线程中的代码，
-     * 调用本方法后，exeucute方法中的参数应设置为null
-     * @param listener:保存处理服务端返回结果的代码块
-     */
-    public OkHttpUtils<T> onPostExecute(OnCompleteListener<T> listener) {
-        mListener = listener;
+        mCallback=callback;
         return this;
     }
 
     /**
-     * 发送消息，可用于文件下载中的更新下载进度
+     * 在主线程中执行的代码，doInBackground方法之后调用
+     * @param listener
+     * @return
+     */
+    public OkHttpUtils<T> onPostExecute(OnCompleteListener<T> listener) {
+        mListener=listener;
+        return this;
+    }
+
+    /**doInBackground()之前在主线程中执行的方法，类似与AsyncTask中的onPreExecute()
+     * @param r:运行的代码
+     * @return
+     */
+    public OkHttpUtils<T> onPreExecute(Runnable r) {
+        r.run();
+        return this;
+    }
+
+    /**
+     * 工作线程向主线程发送消息
      * @param msg
      */
     public void sendMessage(Message msg) {
         mHandler.sendMessage(msg);
     }
 
+    /**
+     * 重载的sendMessage方法，用于发送空消息
+     * @param what
+     */
     public void sendMessage(int what) {
         mHandler.sendEmptyMessage(what);
     }
 
-    /**不更新下载百分比的文件下载
-     * @param in
-     * @param file
-     */
-    public void downloadFile(InputStream in, File file) {
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            int len;
-            byte[] buffer = new byte[1024 * 5];
-            sendMessage(OkHttpUtils.DOWNLOADING_START);
-            while ((len = in.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
-            sendMessage(OkHttpUtils.DOWNLOADING_FINISH);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**本方法在文件下载时，可更新下载百分比
-     * @param response:服务端的响应
-     * @param file：保存的文件
-     */
-    public void downloadFile(Response response, File file) {
-        FileOutputStream out = null;
-        try {
-            long fileSize = response.body().contentLength();
-            InputStream in = response.body().byteStream();
-            out = new FileOutputStream(file);
-            int len;
-            byte[] buffer = new byte[1024 * 5];
-            int total = 0;
-            int percent = 1;
-            sendMessage(OkHttpUtils.DOWNLOADING_START);
-            while ((len = in.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-                total += len;
-                int current = (int) (100L * total / fileSize);
-                if (current >= percent) {
-                    Message msg = Message.obtain();
-                    msg.what = DOWNLOADING_PERCENT;
-                    msg.arg1 = current;
-                    sendMessage(msg);
-                    percent = current + 1;
-                }
-            }
-            sendMessage(OkHttpUtils.DOWNLOADING_FINISH);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public <T> T parseJson(String json, Class<?> clazz) {
+        Gson gson=new Gson();
+        T t = (T) gson.fromJson(json, clazz);
+        return t;
     }
 
     /**
-     * 数组转换为ArrayList集合
-     *
-     * @param array
+     * 专门针对Result类的json解析方法，不具有通用性，属性定制、专用的方法
+     * @param result
+     * @param clazz
      * @param <T>
      * @return
      */
-    public static <T> ArrayList<T> array2List(T[] array) {
-        final List<T> list = Arrays.asList(array);
-        return new ArrayList(list);
+    public <T> T parseJson(Result result, Class<?> clazz) {
+        if (result.getRetCode() == 0) {
+            String json = result.getRetData().toString();
+            T t = parseJson(json, clazz);
+            return t;
+        }
+        return null;
     }
 
     /**
-     * OkHttpUtils创建后，必须在组件的onDestroy方法中调用本方法，释放mOkHttpClient
+     * 下载文件，支持更新下载进度
+     * @param response：服务端返回的响应类对象
+     * @param file：保存下载文件的File
+     * @throws Exception：IO异常
+     */
+    public void downloadFile(Response response, File file) throws Exception {
+        FileOutputStream out = new FileOutputStream(file);
+
+        InputStream in = response.body().byteStream();
+        int len;
+        byte[] buffer = new byte[1024 * 5];
+        //获取文件的字节数
+        long fileSize = response.body().contentLength();
+        int  total=0;//累加下载的字节数
+        int percent=1;//下载的预期百分比
+        int currentPer;//当前下载的百分比
+        mHandler.sendEmptyMessage(DOWNLOAD_START);
+        while ((len=in.read(buffer)) != -1) {
+            out.write(buffer,0,len);
+            total+=len;
+            //计算下载的百分比
+            currentPer= (int) (total*100L/fileSize);
+            if (currentPer >= percent) {
+                Message msg = Message.obtain();
+                msg.what= OkHttpUtils.DOWNLOADING;
+                msg.arg1=percent;
+                sendMessage(msg);
+                percent=currentPer+1;
+            }
+        }
+        sendMessage(OkHttpUtils.DOWNLOAD_FINISH);
+    }
+
+    public <T>  ArrayList<T> array2List(T[] array) {
+        List<T> list = Arrays.asList(array);
+        ArrayList<T> arrayList = new ArrayList<>(list);
+        return arrayList;
+    }
+
+    /**
+     * 释放mClient的资源
      */
     public static void release() {
-
         if (mOkHttpClient != null) {
-            mOkHttpClient = null;
-            Log.i("main", "OkHttpClient对象成功释放");
+            //取消所有请求
+            mOkHttpClient.dispatcher().cancelAll();
+            mOkHttpClient=null;
         }
     }
 
-    public void free() {
-        mListener=null;
-        mHandler=null;
-        mFileBody=null;
-        mUrl=null;mCallback=null;
-        mClazz=null;
-    }
 }
