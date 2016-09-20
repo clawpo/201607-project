@@ -1,11 +1,12 @@
 package cn.ucai.superwechat.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 分页实体类
  */
-public class Pager {
+public class Pager implements Serializable {
 	private int currentPage;	//当前页号
 	private int maxRecord;		//当前页面的最大记录数
 	

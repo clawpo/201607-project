@@ -1,6 +1,8 @@
 package cn.ucai.superwechat.bean;
 
-public class MemberUserAvatar extends UserAvatar {
+import java.io.Serializable;
+
+public class MemberUserAvatar extends UserAvatar implements Serializable {
 	private Integer mmemberId;
 	private Integer mmemberGroupId;
 	private String mmemberGroupHxid;
