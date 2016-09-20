@@ -68,11 +68,20 @@ public class RegisterActivity extends BaseActivity {
 
     public void register() {
         final String username = etUsername.getText().toString().trim();
+        final String nickname = etNickname.getText().toString().trim();
         final String pwd = etPassword.getText().toString().trim();
         String confirm_pwd = etConfirmPassword.getText().toString().trim();
         if (TextUtils.isEmpty(username)) {
             etUsername.requestFocus();
             Toast.makeText(this, getResources().getString(R.string.User_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
+            return;
+        } else if (!username.matches("[\\w][\\w\\d_]{5,17}")) {
+            etUsername.requestFocus();
+            Toast.makeText(this, getResources().getString(R.string.illegal_user_name), Toast.LENGTH_SHORT).show();
+            return;
+        } else if (TextUtils.isEmpty(nickname)) {
+            etNickname.requestFocus();
+            Toast.makeText(this, getResources().getString(R.string.Nick_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
             return;
         } else if (TextUtils.isEmpty(pwd)) {
             etPassword.requestFocus();

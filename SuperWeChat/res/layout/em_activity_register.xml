@@ -24,7 +24,6 @@
                 android:hint="@string/login_txt_username"
                 android:paddingLeft="90dp"
                 android:singleLine="true"
-                android:maxLength="11"
                 android:textColorHint="@color/text_color_hint"
                 android:textSize="16sp" />
 
