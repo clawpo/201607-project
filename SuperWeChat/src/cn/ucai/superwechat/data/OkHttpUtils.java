@@ -347,12 +347,19 @@ public class OkHttpUtils<T> {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json = response.body().string();
-                Gson gson = new Gson();
-                T value = gson.fromJson(json, mClazz);
-                Message msg = Message.obtain();
-                msg.what = RESULT_SUCCESS;
-                msg.obj = value;
-                mHandler.sendMessage(msg);
+                if(mClazz.equals(String.class)){
+                    Message msg = Message.obtain();
+                    msg.what = RESULT_SUCCESS;
+                    msg.obj = json;
+                    mHandler.sendMessage(msg);
+                }else {
+                    Gson gson = new Gson();
+                    T value = gson.fromJson(json, mClazz);
+                    Message msg = Message.obtain();
+                    msg.what = RESULT_SUCCESS;
+                    msg.obj = value;
+                    mHandler.sendMessage(msg);
+                }
             }
         });
     }
