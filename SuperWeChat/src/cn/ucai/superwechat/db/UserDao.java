@@ -20,6 +20,7 @@ import com.hyphenate.easeui.domain.EaseUser;
 import java.util.List;
 import java.util.Map;
 
+import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.domain.RobotUser;
 
 public class UserDao {
@@ -109,5 +110,9 @@ public class UserDao {
     
     public void saveRobotUser(List<RobotUser> robotList){
     	SuperWeChatDBManager.getInstance().saveRobotList(robotList);
+    }
+
+    public void saveUserAvatar(UserAvatar user){
+        SuperWeChatDBManager.getInstance().saveUserAvatar(user);
     }
 }
