@@ -13,13 +13,14 @@
  */
 package cn.ucai.superwechat.db;
 
+import android.content.Context;
+
+import com.hyphenate.easeui.domain.EaseUser;
+
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
-
 import cn.ucai.superwechat.domain.RobotUser;
-import com.hyphenate.easeui.domain.EaseUser;
 
 public class UserDao {
 	public static final String TABLE_NAME = "uers";
@@ -35,9 +36,20 @@ public class UserDao {
 	public static final String ROBOT_COLUMN_NAME_ID = "username";
 	public static final String ROBOT_COLUMN_NAME_NICK = "nick";
 	public static final String ROBOT_COLUMN_NAME_AVATAR = "avatar";
-	
-	
-	public UserDao(Context context) {
+
+	public static final String USER_TABLE_NAME = "t_superwechat_user";
+    public static final String USER_COLUMN_NAME_ID = "muserName";
+    public static final String USER_COLUMN_NAME_NICK = "muserNick";
+    public static final String USER_COLUMN_AVATAR_ID = "mavatarId";
+    public static final String USER_COLUMN_AVATAR_PATH = "mavatarPath";
+    public static final String USER_COLUMN_AVATAR_SUFFIX = "mavatarSuffix";
+    public static final String USER_COLUMN_AVATAR_TYPE = "mavatarType";
+    public static final String USER_COLUMN_AVATAR_LAST_UPDATE_TIME = "mavatarLastUpdateTime";
+
+
+
+
+    public UserDao(Context context) {
 	}
 
 	/**
