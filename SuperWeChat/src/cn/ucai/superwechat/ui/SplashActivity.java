@@ -5,8 +5,10 @@ import android.os.Bundle;
 
 import com.hyphenate.chat.EMClient;
 
-import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.utils.L;
 
 /**
  * 开屏页
@@ -41,6 +43,8 @@ public class SplashActivity extends BaseActivity {
 					long start = System.currentTimeMillis();
 					EMClient.getInstance().groupManager().loadAllGroups();
 					EMClient.getInstance().chatManager().loadAllConversations();
+					UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
+					L.e("splash,aotu login,user="+user);
 					long costTime = System.currentTimeMillis() - start;
 					//wait
 					if (sleepTime - costTime > 0) {
