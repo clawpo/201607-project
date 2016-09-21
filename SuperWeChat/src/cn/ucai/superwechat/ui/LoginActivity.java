@@ -35,11 +35,19 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.ucai.superwechat.I;
+import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
-import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.bean.Result;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.db.SuperWeChatDBManager;
+import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.utils.CommonUtils;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.ResultUtils;
 
 /**
  * Login screen
@@ -60,11 +68,11 @@ public class LoginActivity extends BaseActivity {
     Button btnLogin;
     @BindView(R.id.btn_register)
     Button btnRegister;
-//	private EditText usernameEditText;
-//	private EditText passwordEditText;
-
+	String currentUsername;
+	String currentPassword;
     private boolean progressShow;
     private boolean autoLogin = false;
+	ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +125,8 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		String currentUsername = etUsername.getText().toString().trim();
-		String currentPassword = etPassword.getText().toString().trim();
+		currentUsername = etUsername.getText().toString().trim();
+		currentPassword = etPassword.getText().toString().trim();
 
 		if (TextUtils.isEmpty(currentUsername)) {
 			Toast.makeText(this, R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
@@ -130,7 +138,7 @@ public class LoginActivity extends BaseActivity {
 		}
 
 		progressShow = true;
-		final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
+		pd = new ProgressDialog(LoginActivity.this);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -158,30 +166,7 @@ public class LoginActivity extends BaseActivity {
 			@Override
 			public void onSuccess() {
 				Log.d(TAG, "login: onSuccess");
-
-
-				// ** manually load all local groups and conversation
-			    EMClient.getInstance().groupManager().loadAllGroups();
-			    EMClient.getInstance().chatManager().loadAllConversations();
-
-			    // update current user's display name for APNs
-				boolean updatenick = EMClient.getInstance().updateCurrentUserNick(
-						SuperWeChatApplication.currentUserNick.trim());
-				if (!updatenick) {
-					Log.e("LoginActivity", "update current user nick fail");
-				}
-
-				if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
-				    pd.dismiss();
-				}
-				// get user's info (this should be get from App's server or 3rd party service)
-				SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
-
-				Intent intent = new Intent(LoginActivity.this,
-						MainActivity.class);
-				startActivity(intent);
-
-				finish();
+				loginAppServer();
 			}
 
 			@Override
@@ -206,7 +191,70 @@ public class LoginActivity extends BaseActivity {
 		});
 	}
 
+	private void loginAppServer() {
+		OkHttpUtils<String> utils = new OkHttpUtils<>(LoginActivity.this);
+		utils.setRequestUrl(I.REQUEST_LOGIN)
+				.addParam(I.User.USER_NAME,currentUsername)
+				.addParam(I.User.PASSWORD,currentPassword)
+				.targetClass(String.class)
+				.execute(new OkHttpUtils.OnCompleteListener<String>() {
+					@Override
+					public void onSuccess(String s) {
+						L.e(TAG,"s="+s);
+						Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+						Log.e(TAG,"result="+result);
+						if(result!=null && result.isRetMsg()){
+							UserAvatar user= (UserAvatar) result.getRetData();
+							Log.e(TAG,"user="+user);
+							if(user!=null) {
+								saveUser2DB(user);
+								loginSuccess();
+//								downloadUserAvatarFromAppServer();
+							}
+						}else{
+							pd.dismiss();
+							CommonUtils.showShortResultMsg(result==null?-1:result.getRetCode());
+						}
+					}
 
+					@Override
+					public void onError(String error) {
+						pd.dismiss();
+						CommonUtils.showShortToast(error);
+					}
+				});
+	}
+
+	private void saveUser2DB(UserAvatar user) {
+		UserDao dao = new UserDao(LoginActivity.this);
+		dao.saveUserAvatar(user);
+	}
+
+
+	private void loginSuccess(){
+		// ** manually load all local groups and conversation
+		EMClient.getInstance().groupManager().loadAllGroups();
+		EMClient.getInstance().chatManager().loadAllConversations();
+
+		// update current user's display name for APNs
+		boolean updatenick = EMClient.getInstance().updateCurrentUserNick(
+				SuperWeChatApplication.currentUserNick.trim());
+		if (!updatenick) {
+			Log.e("LoginActivity", "update current user nick fail");
+		}
+
+		if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
+			pd.dismiss();
+		}
+		// get user's info (this should be get from App's server or 3rd party service)
+		SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
+
+		Intent intent = new Intent(LoginActivity.this,
+				MainActivity.class);
+		startActivity(intent);
+
+		finish();
+	}
     /**
      * register
      *
