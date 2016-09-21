@@ -183,6 +183,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } catch (final HyphenateException e) {
+                    unRegister();
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (!RegisterActivity.this.isFinishing())
@@ -216,5 +217,23 @@ public class RegisterActivity extends BaseActivity {
                 register();
                 break;
         }
+    }
+
+    private void unRegister(){
+        OkHttpUtils<Result> utils = new OkHttpUtils<>(RegisterActivity.this);
+        utils.setRequestUrl(I.REQUEST_UNREGISTER)
+                .addParam(I.User.USER_NAME,username)
+                .targetClass(Result.class)
+                .execute(new OkHttpUtils.OnCompleteListener<Result>() {
+                    @Override
+                    public void onSuccess(Result result) {
+                        L.e("unregister success="+result);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        L.e("unregister error="+error);
+                    }
+                });
     }
 }
