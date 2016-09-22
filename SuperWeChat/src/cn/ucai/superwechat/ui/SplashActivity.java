@@ -9,6 +9,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.utils.L;
+import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * 开屏页
@@ -55,7 +56,7 @@ public class SplashActivity extends BaseActivity {
 						}
 					}
 					//enter main screen
-					startActivity(new Intent(SplashActivity.this, MainActivity.class));
+					MFGT.gotoMainActivity(SplashActivity.this);
 					finish();
 				}else {
 					try {
