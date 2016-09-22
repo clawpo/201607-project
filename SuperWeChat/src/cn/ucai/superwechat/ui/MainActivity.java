@@ -31,6 +31,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +61,8 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.adapter.MainTabAdpter;
 import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.dialog.TitleMenu.ActionItem;
+import cn.ucai.superwechat.dialog.TitleMenu.TitlePopup;
 import cn.ucai.superwechat.runtimepermissions.PermissionsManager;
 import cn.ucai.superwechat.runtimepermissions.PermissionsResultAction;
 import cn.ucai.superwechat.widget.DMTabHost;
@@ -80,6 +83,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
     private MainTabAdpter adapter;
     private ContactListFragment contactListFragment;
     private int pageIndex = 0;
+    private TitlePopup titlePopup;
 
     //    // textview for unread message count
 //    private TextView unreadLabel;
@@ -126,6 +130,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
         initView();
         initMainTab();
+        initPopWindow();
         umeng();
         checkAccount();
         inviteMessgeDao = new InviteMessgeDao(this);
@@ -167,6 +172,21 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
                 //Toast.makeText(MainActivity.this, "Permission " + permission + " has been denied", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void initPopWindow() {
+        titlePopup = new TitlePopup(this, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        titlePopup.setItemOnClickListener(null);
+        // 给标题栏弹窗添加子类
+        titlePopup.addAction(new ActionItem(this, R.string.menu_groupchat,
+                R.drawable.icon_menu_group));
+        titlePopup.addAction(new ActionItem(this, R.string.menu_addfriend,
+                R.drawable.icon_menu_addfriend));
+        titlePopup.addAction(new ActionItem(this, R.string.menu_qrcode,
+                R.drawable.icon_menu_sao));
+        titlePopup.addAction(new ActionItem(this, R.string.menu_money,
+                R.drawable.icon_menu_money));
     }
 
     /**
@@ -311,7 +331,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
     @OnClick(R.id.img_right)
     public void onClick() {
-
+        titlePopup.show(findViewById(R.id.layout_title));
     }
 
     @Override
