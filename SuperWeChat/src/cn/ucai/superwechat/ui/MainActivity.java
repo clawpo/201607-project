@@ -28,8 +28,10 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,19 +66,22 @@ import cn.ucai.superwechat.widget.DMTabHost;
 import cn.ucai.superwechat.widget.MFViewPager;
 
 @SuppressLint("NewApi")
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedChangeListener, ViewPager.OnPageChangeListener {
 
     protected static final String TAG = "MainActivity";
-    @BindView(R.id.txt_title)
-    TextView txtTitle;
+    @BindView(R.id.txt_left)
+    TextView txtLeft;
+    @BindView(R.id.img_right)
+    ImageView imgRight;
     @BindView(R.id.viewpager)
     MFViewPager viewpager;
     @BindView(R.id.tab_host)
     DMTabHost tabHost;
     private MainTabAdpter adapter;
     private ContactListFragment contactListFragment;
+    private int pageIndex = 0;
 
-//    // textview for unread message count
+    //    // textview for unread message count
 //    private TextView unreadLabel;
 //    // textview for unread event message
 //    private TextView unreadAddressLable;
@@ -119,7 +124,7 @@ public class MainActivity extends BaseActivity {
         // runtime permission for android 6.0, just require all permissions here for simple
         requestPermissions();
 
-//        initView();
+        initView();
         initMainTab();
         umeng();
         checkAccount();
@@ -167,16 +172,13 @@ public class MainActivity extends BaseActivity {
     /**
      * init views
      */
-//    private void initView() {
-//        unreadLabel = (TextView) findViewById(R.id.unread_msg_number);
-//        unreadAddressLable = (TextView) findViewById(R.id.unread_address_number);
-//        mTabs = new Button[3];
-//        mTabs[0] = (Button) findViewById(R.id.btn_conversation);
-//        mTabs[1] = (Button) findViewById(R.id.btn_address_list);
-//        mTabs[2] = (Button) findViewById(R.id.btn_setting);
-//        // select first tab
-//        mTabs[0].setSelected(true);
-//    }
+    private void initView() {
+        txtLeft.setVisibility(View.VISIBLE);
+        imgRight.setVisibility(View.VISIBLE);
+        tabHost.setOnCheckedChangeListener(this);
+        tabHost.setChecked(0);
+        viewpager.setOnPageChangeListener(this);
+    }
 
     /**
      * on tab clicked
@@ -309,6 +311,34 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.img_right)
     public void onClick() {
+
+    }
+
+    @Override
+    public void onCheckedChange(int checkedPosition, boolean byUser) {
+        setTabMsg(checkedPosition);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        tabHost.setChecked(position);
+        setTabMsg(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+
+    private void setTabMsg(int checkedPosition) {
+        pageIndex = checkedPosition;
+        viewpager.setCurrentItem(checkedPosition);
     }
 
     public class MyContactListener implements EMContactListener {
