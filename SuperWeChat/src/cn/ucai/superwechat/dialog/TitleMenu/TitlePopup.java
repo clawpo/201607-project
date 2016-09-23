@@ -77,7 +77,7 @@ public class TitlePopup extends PopupWindow {
 		mScreenHeight = wm.getDefaultDisplay().getHeight();
 
 		// 设置弹窗的宽度和高度
-		setWidth(width);
+		setWidth((int)(mScreenWidth*0.6));
 		setHeight(height);
 
 		setBackgroundDrawable(new BitmapDrawable());
