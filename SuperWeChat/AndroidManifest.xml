@@ -84,6 +84,12 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <!-- 设置 -->
+        <activity
+            android:name="cn.ucai.superwechat.ui.SettingsActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
         <!-- 注册 -->
         <activity
             android:name="cn.ucai.superwechat.ui.RegisterActivity"
