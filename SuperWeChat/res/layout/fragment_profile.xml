@@ -64,14 +64,6 @@
                     android:layout_marginRight="15dp"
                     android:src="@drawable/right" />
 
-                <ImageView
-                    android:id="@+id/iv_sex"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_toRightOf="@+id/tvname"
-                    android:src="@drawable/ic_sex_female" />
             </RelativeLayout>
 
             <View
