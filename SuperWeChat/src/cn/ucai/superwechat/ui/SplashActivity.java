@@ -2,6 +2,7 @@ package cn.ucai.superwechat.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.hyphenate.chat.EMClient;
 
@@ -23,21 +24,13 @@ public class SplashActivity extends BaseActivity {
 	protected void onCreate(Bundle arg0) {
 		setContentView(R.layout.em_activity_splash);
 		super.onCreate(arg0);
-
-//		RelativeLayout rootLayout = (RelativeLayout) findViewById(R.id.splash_root);
-//		TextView versionText = (TextView) findViewById(R.id.tv_version);
-//
-//		versionText.setText(getVersion());
-//		AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
-//		animation.setDuration(1500);
-//		rootLayout.startAnimation(animation);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		new Thread(new Runnable() {
+		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				if (SuperWeChatHelper.getInstance().isLoggedIn()) {
 					// auto login mode, make sure all group and conversation is loaed before enter the main screen
@@ -46,28 +39,15 @@ public class SplashActivity extends BaseActivity {
 					EMClient.getInstance().chatManager().loadAllConversations();
 					UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
 					L.e("splash,aotu login,user="+user);
-					long costTime = System.currentTimeMillis() - start;
-					//wait
-					if (sleepTime - costTime > 0) {
-						try {
-							Thread.sleep(sleepTime - costTime);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
 					//enter main screen
 					MFGT.gotoMainActivity(SplashActivity.this);
 					finish();
 				}else {
-					try {
-						Thread.sleep(sleepTime);
-					} catch (InterruptedException e) {
-					}
 					startActivity(new Intent(SplashActivity.this, GuideActivity.class));
 					finish();
 				}
 			}
-		}).start();
+		},sleepTime);
 
 	}
 	
