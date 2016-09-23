@@ -11,7 +11,7 @@ import cn.ucai.superwechat.R;
 /**
  * Created by clawpo on 2016/9/22.
  */
-public class Fragment_Dicover extends Fragment {
+public class DicoverFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

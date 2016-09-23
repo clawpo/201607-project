@@ -154,8 +154,8 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
         viewpager.setOffscreenPageLimit(4);
         adapter.addFragment(new ConversationListFragment(), getString(R.string.app_name));
         adapter.addFragment(new ContactListFragment(), getString(R.string.contacts));
-        adapter.addFragment(new Fragment_Dicover(), getString(R.string.discover));
-        adapter.addFragment(new Fragment_Profile(), getString(R.string.me));
+        adapter.addFragment(new DicoverFragment(), getString(R.string.discover));
+        adapter.addFragment(new ProfileFragment(), getString(R.string.me));
         adapter.notifyDataSetChanged();
     }
 
