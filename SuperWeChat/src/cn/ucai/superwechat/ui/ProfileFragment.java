@@ -55,4 +55,9 @@ public class ProfileFragment extends Fragment {
     public void settings(){
         MFGT.gotoSettings(getActivity());
     }
+
+    @OnClick(R.id.view_user)
+    public void view_user_onclick(){
+        MFGT.gotoUserView(getActivity());
+    }
 }
