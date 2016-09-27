@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,10 +30,14 @@ import java.io.ByteArrayOutputStream;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.bean.Result;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
+import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
 
@@ -155,7 +160,6 @@ public class UserProfileActivity extends BaseActivity {
 
 
     private void updateRemoteNick(final String nickName) {
-        dialog = ProgressDialog.show(this, getString(R.string.dl_update_nick), getString(R.string.dl_waiting));
         new Thread(new Runnable() {
 
             @Override
@@ -279,6 +283,7 @@ public class UserProfileActivity extends BaseActivity {
     @OnClick(R.id.layout_userinfo_nick)
     public void userinfo_nick_onclick() {
         final EditText editText = new EditText(this);
+        editText.setText(user.getMUserNick());
         new Builder(this).setTitle(R.string.setting_nickname).setIcon(android.R.drawable.ic_dialog_info).setView(editText)
                 .setPositiveButton(R.string.dl_ok, new DialogInterface.OnClickListener() {
 
@@ -289,9 +294,50 @@ public class UserProfileActivity extends BaseActivity {
                             Toast.makeText(UserProfileActivity.this, getString(R.string.toast_nick_not_isnull), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        updateRemoteNick(nickString);
+                        if(!user.getMUserNick().equals(nickString)) {
+                            updateAppNick(nickString);
+                        }else{
+                            CommonUtils.showShortToast(R.string.toast_updatenick_fail);
+                        }
                     }
                 }).setNegativeButton(R.string.dl_cancel, null).show();
+    }
+
+    private void updateAppNick(final String nickString) {
+        dialog = ProgressDialog.show(this, getString(R.string.dl_update_nick), getString(R.string.dl_waiting));
+        OkHttpUtils<Result> utils = new OkHttpUtils<>(UserProfileActivity.this);
+        utils.setRequestUrl(I.REQUEST_UPDATE_USER_NICK)
+                .addParam(I.User.USER_NAME,user.getMUserName())
+                .addParam(I.User.NICK,nickString)
+                .targetClass(Result.class)
+                .execute(new OkHttpUtils.OnCompleteListener<Result>() {
+                    @Override
+                    public void onSuccess(Result result) {
+                        Log.e("userProfile","result="+result);
+                        if(result!=null && result.isRetMsg()){
+                            updateRemoteNick(nickString);
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(UserProfileActivity.this, getString(R.string.toast_updatenick_fail), Toast.LENGTH_SHORT)
+                                            .show();
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(UserProfileActivity.this, getString(R.string.toast_updatenick_fail), Toast.LENGTH_SHORT)
+                                        .show();
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                });
     }
 
     @OnClick(R.id.view_user)
