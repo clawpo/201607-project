@@ -65,6 +65,7 @@ import cn.ucai.superwechat.dialog.TitleMenu.ActionItem;
 import cn.ucai.superwechat.dialog.TitleMenu.TitlePopup;
 import cn.ucai.superwechat.runtimepermissions.PermissionsManager;
 import cn.ucai.superwechat.runtimepermissions.PermissionsResultAction;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.widget.DMTabHost;
 import cn.ucai.superwechat.widget.MFViewPager;
 
@@ -508,7 +509,8 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false);
+            L.e("main,onKeyDown KEYCODE_BACK");
+            moveTaskToBack(true);
             return true;
         }
         return super.onKeyDown(keyCode, event);
