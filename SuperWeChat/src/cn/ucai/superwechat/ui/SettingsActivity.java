@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.SuperWeChatModel;
 import cn.ucai.superwechat.common.ExitAppUtils;
+import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * settings screen
@@ -106,6 +108,9 @@ public class SettingsActivity extends BaseActivity implements OnClickListener {
     private SuperWeChatModel settingsModel;
     private EMOptions chatOptions;
 
+	private ImageView imgBack;
+	private TextView tvTitle;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,6 +118,12 @@ public class SettingsActivity extends BaseActivity implements OnClickListener {
 
 		if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
             return;
+		imgBack = (ImageView) findViewById(R.id.img_back);
+		tvTitle = (TextView) findViewById(R.id.txt_title);
+		imgBack.setVisibility(View.VISIBLE);
+		tvTitle.setVisibility(View.VISIBLE);
+		tvTitle.setText(getString(R.string.setting));
+
 		rl_switch_notification = (RelativeLayout) findViewById(R.id.rl_switch_notification);
 		rl_switch_sound = (RelativeLayout) findViewById(R.id.rl_switch_sound);
 		rl_switch_vibrate = (RelativeLayout) findViewById(R.id.rl_switch_vibrate);
@@ -148,7 +159,8 @@ public class SettingsActivity extends BaseActivity implements OnClickListener {
 		
 		settingsModel = SuperWeChatHelper.getInstance().getModel();
 		chatOptions = EMClient.getInstance().getOptions();
-		
+
+		imgBack.setOnClickListener(this);
 		blacklistContainer.setOnClickListener(this);
 		userProfileContainer.setOnClickListener(this);
 		rl_switch_notification.setOnClickListener(this);
@@ -355,6 +367,9 @@ public class SettingsActivity extends BaseActivity implements OnClickListener {
 				break;
 			case R.id.rl_custom_server:
 				startActivity(new Intent(SettingsActivity.this, SetServersActivity.class));
+				break;
+			case R.id.img_back:
+				MFGT.finish(SettingsActivity.this);
 				break;
 			default:
 				break;
