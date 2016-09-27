@@ -45,6 +45,19 @@
     <string name="profile_txt_userid">微信号：dada2012625</string>
     <string name="profile_txt_mycode">我的二维码</string>
 
+    <!--UserInfo-->
+    <string name="userinfo_txt_title">个人信息</string>
+    <string name="userinfo_txt_avatar">头像</string>
+    <string name="userinfo_txt_nick">昵称</string>
+    <string name="userinfo_txt_name">微信号</string>
+    <string name="userinfo_txt_qrcode">二维码名片</string>
+    <string name="userinfo_txt_address">我的地址</string>
+    <string name="userinfo_txt_sex">性别</string>
+    <string name="userinfo_txt_area">地区</string>
+    <string name="userinfo_txt_sign">个性签名</string>
+    <string name="userinfo_txt_noinput">未填写</string>
+    <string name="userinfo_txt_nosettings">未设置</string>
+
     <!-- Dicover-->
     <string name="discover_txt_pengyouquan">朋友圈</string>
     <string name="discover_txt_saoyisao">扫一扫</string>
