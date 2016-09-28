@@ -79,6 +79,10 @@ public interface I {
 	String AVATAR_TYPE_GROUP_PATH 					=		"group_icon";					//群组头像保存目录
 	String AVATAR_SUFFIX_PNG						=		".png";							//PNG图片后缀名
 	String AVATAR_SUFFIX_JPG						=		".jpg";							//JPG图片后缀名
+	String AVATAR_WIDTH								= 		"width";						//下载图片的宽度
+	String AVATAR_HEIGHT							= 		"height";						//下载图片的高度
+	int AVATAR_WIDTH_DEFAULT						= 		200;							//下载图片的宽度默认值
+	int AVATAR_HEIGHT_DEFAULT						= 		200;							//下载图片的高度默认值
     String QUESTION                                 =       "?";                            //问号
     String EQUAL                                    =       "=";                            //等号
     String AND	                                    =       "&";                            //&符号

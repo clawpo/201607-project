@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.easeui.domain.EaseUser;
-import com.hyphenate.easeui.utils.EaseUserUtils;
 
 import java.io.ByteArrayOutputStream;
 
@@ -95,7 +94,7 @@ public class UserProfileActivity extends BaseActivity {
         } else {
             UserUtils.setUserNick(user.getMUserNick(), mTxtUserinfoNick);
             UserUtils.setUserName(user.getMUserName(), mTxtUserinfoName);
-            EaseUserUtils.setUserAvatar(SuperWeChatApplication.applicationContext, user.getMUserName(), mProfileImage);
+            UserUtils.setUserAvatar(SuperWeChatApplication.applicationContext, user.getMUserName(), mProfileImage);
         }
     }
 

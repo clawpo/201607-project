@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hyphenate.easeui.utils.EaseUserUtils;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,7 +47,7 @@ public class ProfileFragment extends Fragment {
         UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
         UserUtils.setUserNick(user.getMUserNick(),mTvname);
         UserUtils.setUserName("微信号:"+user.getMUserName(),mTvmsg);
-        EaseUserUtils.setUserAvatar(SuperWeChatApplication.applicationContext,user.getMUserName(),mProfileImage);
+        UserUtils.setUserAvatar(SuperWeChatApplication.applicationContext,user.getMUserName(),mProfileImage);
     }
 
     @Override
