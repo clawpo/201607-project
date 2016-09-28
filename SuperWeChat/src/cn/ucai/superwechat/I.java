@@ -128,77 +128,78 @@ public interface I {
 //	String SERVER_ROOT = "http://120.26.242.249:8080/SuperWeChatServerV2.0/";
 	String SERVER_ROOT = "http://101.251.196.90:8000/SuperWeChatServerV2.0/";
 
-	String KEY_REQUEST 								= 		"request";
-	/** 上传图片的类型：user_avatar或group_icon */
+	/** 上传头像图片的类型：user_avatar或group_icon */
 	String AVATAR_TYPE 								= 		"avatarType";
-	/** 用户姓名或hxid */
+	/** 用户的账号或群组的环信id */
 	String NAME_OR_HXID                             =       "name_or_hxid";
-	/** 服务器状态的请求 */
+	/** 客户端发送的获取服务端状态的请求 */
 	String REQUEST_SERVERSTATUS 					= 		"getServerStatus";
-	/** 客户端发送的注册请求 */
+	/** 客户端发送的新用户注册的请求 */
 	String REQUEST_REGISTER		 					= 		"register";
-	/**  发送取消注册的请求 */
+	/** 客户端发送的取消注册的请求 */
 	String REQUEST_UNREGISTER 						= 		"unregister";
-	/** 客户端上传头像的请求 */
-	String REQUEST_UPLOAD_AVATAR 					= 		"upload_avatar";
-	/** 客户端更新用户昵称的请求 */
-	String REQUEST_UPDATE_USER_NICK 				= 		"updateNick";
-	/** 客户端修改密码的请求 */
-	String REQUEST_UPDATE_USER_PASSWORD 			= 		"update_password";
-	/** 客户端发送的登陆请求 */
+	/** 客户端发送的用户登录请求 */
 	String REQUEST_LOGIN 							= 		"login";
 	/** 客户端发送的下载用户头像请求 */
-	String REQUEST_DOWNLOAD_AVATAR	 				= 		"download_avatar";
-	/** 客户端发送的下载联系人所有集合请求 */
-	String REQUEST_DOWNLOAD_CONTACT_ALL_LIST 		= 		"download_contact_all_list";
-	/** 客户端发送的下载联系人集合请求 */
-	String REQUEST_DOWNLOAD_CONTACT_PAGE_LIST 		= 		"download_contact_page_list";
-	/** 客户端发送的删除联系人请求 */
-	String REQUEST_DELETE_CONTACT 					= 		"delete_contact";
-	/** 客户端发送的添加联系人请求 */
-	String REQUEST_ADD_CONTACT 						= 		"add_contact";
-	/** 客户端发送的查找用户请求 */
-	String REQUEST_FIND_USER 						= 		"find_user";
-	/** 客户端发送的根据用户或昵称模糊查找用户请求 */
-	String REQUEST_FIND_USERS_FOR_SEARCH			= 		"find_users_for_search";
-	/** 客户端发送的上传位置请求 */
-	String REQUEST_UPLOAD_LOCATION 					= 		"upload_location";
-	/** 客户端发送的更新位置请求 */
-	String REQUEST_UPDATE_LOCATION 					= 		"update_location";
-	/** 客户端发送的下载位置请求 */
-	String REQUEST_DOWNLOAD_LOCATION 				= 		"download_location";
-	/** 客户端发送的创建群组请求 */
-	String REQUEST_CREATE_GROUP			 			= 		"create_group";
-	/** 客户端发送的添加群成员请求 */
-	String REQUEST_ADD_GROUP_MEMBER 				= 		"add_group_member";
-	/** 客户端发送的添加多个群成员请求 */
-	String REQUEST_ADD_GROUP_MEMBERS		 		= 		"add_group_members";
-	/** 客户端发送的更新群名称请求 */
-	String REQUEST_UPDATE_GROUP_NAME 				= 		"update_group_name";
-	/** 客户端发送的下载多个群成员请求 */
-	String REQUEST_DOWNLOAD_GROUP_MEMBERS 			= 		"download_group_members_by_groupid";
-	/** 客户端发送的下载多个群成员请求 */
-	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_LIMIT 	= 		"download_group_members_by_limit";
-	/** 客户端发送的下载多个群成员请求 */
-	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID 	= 		"download_group_members_by_hxid";
-	/** 客户端发送的下载多个群成员请求 */
-	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID_LIMIT 	= 		"download_group_members_by_hxid_limit";
-	/** 客户端发送的删除群成员请求 */
-	String REQUEST_DELETE_GROUP_MEMBER 				= 		"delete_group_member";
-	/** 客户端发送的删除多个群成员请求 */
-	String REQUEST_DELETE_GROUP_MEMBERS 			= 		"delete_group_members";
-	/** 客户端发送的删除群组请求 */
-	String REQUEST_DELETE_GROUP 					= 		"delete_group";
-	/** 客户端发送的下载公开裙请求 */
-	String REQUEST_FIND_PUBLIC_GROUPS 				= 		"download_public_groups";
-	/** 客户端发送的根据群组名称模糊查找群组请求 */
-	String REQUEST_FIND_GROUP_BY_GROUP_NAME 		= 		"find_group_by_group_name";
-	/** 客户端发送的用户姓名查找用户所在的群组请求 */
-	String REQUEST_FIND_GROUP_BY_USER_NAME 			= 		"find_group_by_user_name";
-	/** 客户端发送的根据群组账号查找群组请求 */
-	String REQUEST_FIND_GROUP_BY_ID					= 		"find_group_by_group_id";
-	/** 客户端发送的根据群组环信id查找群组请求 */
-	String REQUEST_FIND_GROUP_BY_HXID 				= 		"find_group_by_group_hxid";
-	/** 客户端发送的根据群组环信id查找公开群组请求 */
-	String REQUEST_FIND_PUBLIC_GROUP_BY_HXID 		= 		"find_public_group_by_group_hxid";
+	String REQUEST_DOWNLOAD_AVATAR	 				= 		"downloadAvatar";
+	/** 客户端发送的上传/更新用户头像的请求 */
+	String REQUEST_UPDATE_AVATAR 					= 		"updateAvatar";
+	/** 客户端发送的更新用户昵称的请求 */
+	String REQUEST_UPDATE_USER_NICK 				= 		"updateNick";
+	/** 客户端发送的更新用户密码的请求 */
+	String REQUEST_UPDATE_USER_PASSWORD 			= 		"updatePassword";
+	/** 客户端发送的下载用户的好友列表的全部数据的请求 */
+	String REQUEST_DOWNLOAD_CONTACT_ALL_LIST 		= 		"downloadContactAllList";
+	/** 客户端发送的分页下载用户的好友列表的全部数据的请求 */
+	String REQUEST_DOWNLOAD_CONTACT_PAGE_LIST 		= 		"downloadContactPageList";
+	/** 客户端发送的添加好友的请求 */
+	String REQUEST_ADD_CONTACT 						= 		"addContact";
+	/** 客户端发送的删除好友的请求 */
+	String REQUEST_DELETE_CONTACT 					= 		"deleteContact";
+	/** 客户端发送的根据用户名查找用户信息的请求 */
+	String REQUEST_FIND_USER 						= 		"findUserByUserName";
+	/** 客户端发送的根据用户名或昵称模糊分页查找用户数据的请求 */
+	String REQUEST_FIND_USERS_FOR_SEARCH			= 		"findUsersForSearch";
+	/** 客户端发送的创建群组的请求 */
+	String REQUEST_CREATE_GROUP			 			= 		"createGroup";
+	/** 客户端发送的更新群组名称的请求 */
+	String REQUEST_UPDATE_GROUP_NAME 				= 		"updateGroupName";
+	/** 客户端发送的添加群成员的请求 */
+	String REQUEST_ADD_GROUP_MEMBER 				= 		"addGroupMember";
+	/** 客户端发送的批量添加群成员的请求 */
+	String REQUEST_ADD_GROUP_MEMBERS		 		= 		"addGroupMembers";
+	/** 客户端发送的根据群组ID下载全部群成员信息的请求 */
+	String REQUEST_DOWNLOAD_GROUP_MEMBERS 			= 		"downloadGroupMembersByGroupId";
+	/** 客户端发送的根据群组ID分页下载群成员信息的请求 */
+	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_LIMIT 	= 		"downloadGroupMembersPagesByGroupId";
+	/** 客户端发送的根据群组环信ID下载全部群成员信息的请求 */
+	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID 	= 		"downloadGroupMembersByHxId";
+	/** 客户端发送的根据群组环信ID分页下载群成员信息的请求 */
+	String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID_LIMIT 	= 		"downloadGroupMembersPagesByHxId";
+	/** 客户端发送的删除单个群成员的请求 */
+	String REQUEST_DELETE_GROUP_MEMBER 				= 		"deleteGroupMember";
+	/** 客户端发送的删除多个群成员的请求 */
+	String REQUEST_DELETE_GROUP_MEMBERS 			= 		"deleteGroupMembers";
+	/** 客户端发送的删除群组的请求 */
+	String REQUEST_DELETE_GROUP 					= 		"deleteGroup";
+	/** 客户端发送的根据环信ID删除群组的请求 */
+	String REQUEST_DELETE_GROUP_BY_HXID 			= 		"deleteGroupByHxid";
+	/** 客户端发送的获取指定用户的群组全部数据列表的请求 */
+	String REQUEST_FIND_GROUP_BY_USER_NAME 			= 		"findAllGroupByUserName";
+	/** 客户端发送的分页下载公开群组列表的请求 */
+	String REQUEST_FIND_PUBLIC_GROUPS 				= 		"findPublicGroups";
+	/** 客户端发送的根据群组名称模糊查询群组信息的请求 */
+	String REQUEST_FIND_GROUP_BY_GROUP_NAME 		= 		"findGroupByGroupName";
+	/** 客户端发送的根据群组ID查找群组信息的请求 */
+	String REQUEST_FIND_GROUP_BY_ID					= 		"findGroupByGroupId";
+	/** 客户端发送的根据群组环信ID查找群组信息的请求 */
+	String REQUEST_FIND_GROUP_BY_HXID 				= 		"findGroupByHxId";
+	/** 客户端发送的根据群组环信id查找公开群组的请求 */
+	String REQUEST_FIND_PUBLIC_GROUP_BY_HXID 		= 		"findPublicGroupByHxId";
+	/** 客户端发送的上传用户地理位置信息的请求 */
+	String REQUEST_UPLOAD_LOCATION 					= 		"uploadLocation";
+	/** 客户端发送的更新用户地理位置信息的请求 */
+	String REQUEST_UPDATE_LOCATION 					= 		"updateLocation";
+	/** 客户端发送的分页下载附近的人的请求 */
+	String REQUEST_DOWNLOAD_LOCATION 				= 		"downloadLocation";
 }
