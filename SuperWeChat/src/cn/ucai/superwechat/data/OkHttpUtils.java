@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -180,27 +182,23 @@ public class OkHttpUtils<T> {
         return this;
     }
 
-//    public OkHttpUtils<T> addFile2(File file) {
-//        if (mUrl == null) {
-//            return this;
-//        }
-//        RequestBody fileBody = RequestBody.create(MediaType.parse(guessMimeType(file.getName())), file);
-//
-//        mFileBody = new MultipartBuilder()
-//                .type(MultipartBuilder.FORM)
-//                .addPart(Headers.of("Content-Disposition","form-data; name=\"file\";filename=\""+file.getName()+"\""), fileBody)
-//                .build();
-//        return this;
-//    }
-//    private String guessMimeType(String path) {
-//        FileNameMap fileNameMap = URLConnection.getFileNameMap();
-//        String contentTypeFor = fileNameMap.getContentTypeFor(path);
-//        if (contentTypeFor == null)
-//        {
-//            contentTypeFor = "application/octet-stream";
-//        }
-//        return contentTypeFor;
-//    }
+    public OkHttpUtils<T> addFile2(File file) {
+        if (mUrl == null) {
+            return this;
+        }
+        RequestBody fileBody = RequestBody.create(MediaType.parse(guessMimeType(file.getName())), file);
+        mFileBody = new MultipartBody.Builder().addFormDataPart("filename", file.getName(), fileBody).build();
+        return this;
+    }
+    private String guessMimeType(String path) {
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String contentTypeFor = fileNameMap.getContentTypeFor(path);
+        if (contentTypeFor == null)
+        {
+            contentTypeFor = "application/octet-stream";
+        }
+        return contentTypeFor;
+    }
 
     /**
      * 设置为post的请求
