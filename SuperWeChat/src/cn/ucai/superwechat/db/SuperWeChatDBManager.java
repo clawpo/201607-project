@@ -411,4 +411,14 @@ public class SuperWeChatDBManager {
         }
         return user;
     }
+
+    synchronized public void updateUserAvatar(UserAvatar user){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if(user!=null && db.isOpen()){
+            ContentValues values = new ContentValues();
+            values.put(UserDao.USER_COLUMN_NAME_NICK,user.getMUserNick());
+            db.update(UserDao.USER_TABLE_NAME, values,
+                    UserDao.USER_COLUMN_NAME_ID + " = ?", new String[]{user.getMUserName()});
+        }
+    }
 }

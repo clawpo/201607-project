@@ -119,4 +119,8 @@ public class UserDao {
     public UserAvatar getUserAvatar(String username){
         return SuperWeChatDBManager.getInstance().gaveUserAvatar(username);
     }
+
+	public void updateUserAvatar(UserAvatar user){
+		SuperWeChatDBManager.getInstance().updateUserAvatar(user);
+	}
 }
