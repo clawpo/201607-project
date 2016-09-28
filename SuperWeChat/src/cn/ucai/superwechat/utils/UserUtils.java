@@ -1,11 +1,14 @@
 package cn.ucai.superwechat.utils;
 
 import android.content.Context;
+import android.os.Environment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.io.File;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatHelper;
@@ -49,7 +52,7 @@ public class UserUtils {
         }
     }
 
-    public static String getUserAvatarPath(String username){
+    public static String getUserAvatarPath(String username, String suffix, String updateTime){
         //http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?
         // name_or_hxid=a952700&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
         StringBuilder path = new StringBuilder(I.SERVER_ROOT);
@@ -59,11 +62,13 @@ public class UserUtils {
                 .append(I.AND)
                 .append(I.AVATAR_TYPE).append(I.EQUAL).append(I.AVATAR_TYPE_USER_PATH)
                 .append(I.AND)
-                .append(I.Avatar.AVATAR_SUFFIX).append(I.EQUAL).append(I.AVATAR_SUFFIX_JPG)
+                .append(I.Avatar.AVATAR_SUFFIX).append(I.EQUAL).append(suffix)
                 .append(I.AND)
                 .append(I.AVATAR_WIDTH).append(I.EQUAL).append(I.AVATAR_WIDTH_DEFAULT)
                 .append(I.AND)
-                .append(I.AVATAR_HEIGHT).append(I.EQUAL).append(I.AVATAR_HEIGHT_DEFAULT);
+                .append(I.AVATAR_HEIGHT).append(I.EQUAL).append(I.AVATAR_HEIGHT_DEFAULT)
+                .append(I.AND)
+                .append(I.Avatar.UPDATE_TIME).append(I.EQUAL).append(updateTime);
         return path.toString();
     }
 
@@ -71,7 +76,7 @@ public class UserUtils {
         L.e("setUserAvatar username="+username);
         UserAvatar user = getUserInfo(username);
         if(username != null && user.getMAvatarSuffix()!=null){
-            String path = getUserAvatarPath(username);
+            String path = getUserAvatarPath(username,user.getMAvatarSuffix(),user.getMAvatarLastUpdateTime());
             L.e("avatar path="+path);
             try {
                 Glide.with(context).load(path).into(imageView);
@@ -82,5 +87,21 @@ public class UserUtils {
         }else{
             Glide.with(context).load(com.hyphenate.easeui.R.drawable.ease_default_avatar).into(imageView);
         }
+    }
+
+    /**
+     * 返回头像保存在sd卡的位置:
+     * Android/data/cn.ucai.superwechat/files/pictures/user_avatar
+     * @param context
+     * @param path
+     * @return
+     */
+    public static String getAvatarPath(Context context, String path){
+        File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File folder = new File(dir,path);
+        if(!folder.exists()){
+            folder.mkdir();
+        }
+        return folder.getAbsolutePath();
     }
 }
