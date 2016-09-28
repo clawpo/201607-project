@@ -24,7 +24,11 @@ import com.bumptech.glide.Glide;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.easeui.domain.EaseUser;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -208,7 +212,8 @@ public class UserProfileActivity extends BaseActivity {
                 break;
             case REQUESTCODE_CUTTING:
                 if (data != null) {
-                    setPicToView(data);
+                    uploadUserAvatar(data);
+//                    setPicToView(data);
                 }
                 break;
             default:
@@ -230,6 +235,55 @@ public class UserProfileActivity extends BaseActivity {
         startActivityForResult(intent, REQUESTCODE_CUTTING);
     }
 
+    private void uploadUserAvatar(final Intent data) {
+        dialog = ProgressDialog.show(this, getString(R.string.dl_update_photo), getString(R.string.dl_waiting));
+        File file = saveBitmapFile(data);
+        OkHttpUtils<Result> utils = new OkHttpUtils<>(UserProfileActivity.this);
+        utils.setRequestUrl(I.REQUEST_UPDATE_AVATAR)
+                .addParam(I.NAME_OR_HXID,user.getMUserName())
+                .addParam(I.AVATAR_TYPE,I.AVATAR_TYPE_USER_PATH)
+                .targetClass(Result.class)
+                .addFile2(file)
+                .post()
+                .execute(new OkHttpUtils.OnCompleteListener<Result>() {
+                    @Override
+                    public void onSuccess(Result result) {
+                        L.e("result = "+result);
+                        if(result!=null && result.isRetMsg()){
+                            setPicToView(data);
+                        }else{
+                            dialog.dismiss();
+                            CommonUtils.showShortResultMsg(result!=null?result.getRetCode():R.string.toast_updatephoto_fail);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        dialog.dismiss();
+                        CommonUtils.showShortToast(R.string.toast_updatephoto_fail);
+                    }
+                });
+    }
+
+    public File saveBitmapFile(Intent picdata) {
+        Bundle extras = picdata.getExtras();
+        if (extras != null) {
+            Bitmap bitmap = extras.getParcelable("data");
+            File file = new File(UserUtils.getAvatarPath(UserProfileActivity.this,I.AVATAR_TYPE_USER_PATH),
+                    System.currentTimeMillis()+I.AVATAR_SUFFIX_JPG);//将要保存图片的路径
+            L.e("file path="+file.getAbsolutePath());
+            try {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                bos.flush();
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return file;
+        }
+        return null;
+    }
     /**
      * save the picture data
      *
@@ -247,7 +301,6 @@ public class UserProfileActivity extends BaseActivity {
     }
 
     private void uploadUserAvatar(final byte[] data) {
-        dialog = ProgressDialog.show(this, getString(R.string.dl_update_photo), getString(R.string.dl_waiting));
         new Thread(new Runnable() {
 
             @Override
