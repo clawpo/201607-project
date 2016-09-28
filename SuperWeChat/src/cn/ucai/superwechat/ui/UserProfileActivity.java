@@ -40,6 +40,7 @@ import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class UserProfileActivity extends BaseActivity {
 
@@ -92,8 +93,8 @@ public class UserProfileActivity extends BaseActivity {
         if (user == null) {
             finish();
         } else {
-            EaseUserUtils.setUserNick(user.getMUserNick(), mTxtUserinfoNick);
-            EaseUserUtils.setUserNick(user.getMUserName(), mTxtUserinfoName);
+            UserUtils.setUserNick(user.getMUserNick(), mTxtUserinfoNick);
+            UserUtils.setUserName(user.getMUserName(), mTxtUserinfoName);
             EaseUserUtils.setUserAvatar(SuperWeChatApplication.applicationContext, user.getMUserName(), mProfileImage);
         }
     }
@@ -177,6 +178,7 @@ public class UserProfileActivity extends BaseActivity {
                         }
                     });
                 } else {
+                    updateLocalNick(nickName);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -189,6 +191,11 @@ public class UserProfileActivity extends BaseActivity {
                 }
             }
         }).start();
+    }
+
+    private void updateLocalNick(String nickName) {
+        user.setMUserNick(nickName);
+        SuperWeChatHelper.getInstance().saveCurrentUserAvatar(user);
     }
 
     @Override

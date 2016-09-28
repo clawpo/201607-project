@@ -891,6 +891,12 @@ public class SuperWeChatHelper {
         return currentUserAvatar;
     }
 
+    public void saveCurrentUserAvatar(UserAvatar user){
+        currentUserAvatar = user;
+        UserDao dao = new UserDao(appContext);
+        dao.updateUserAvatar(user);
+    }
+
     /**
      * get contact list
      *
