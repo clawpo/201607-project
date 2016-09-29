@@ -14,9 +14,11 @@
 package cn.ucai.superwechat.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,9 +32,16 @@ import com.hyphenate.easeui.widget.EaseAlertDialog;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.bean.Result;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
+import cn.ucai.superwechat.utils.CommonUtils;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.ResultUtils;
 
 public class AddContactActivity extends BaseActivity {
     @BindView(R.id.img_back)
@@ -90,6 +99,11 @@ public class AddContactActivity extends BaseActivity {
      */
     @OnClick(R.id.txt_right)
     public void searchContact() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        boolean isOpen=imm.isActive();//isOpen若返回true，则表示输入法打开
+        if(isOpen) {
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
         progressDialog = new ProgressDialog(this);
         String stri = getResources().getString(R.string.Is_sending_a_request);
         progressDialog.setMessage(stri);
@@ -97,20 +111,49 @@ public class AddContactActivity extends BaseActivity {
         progressDialog.show();
 
         final String name = mEditNote.getText().toString();
+        L.e("name="+name);
         toAddUsername = name.trim();
         if (TextUtils.isEmpty(toAddUsername)) {
             progressDialog.dismiss();
             new EaseAlertDialog(this, R.string.Please_enter_a_username).show();
             return;
         }
-
+        searchUserAvatar();
         // TODO you can search the user from your app server here.
 
         //show the userame and add button if user exist
-        searchedUserLayout.setVisibility(View.VISIBLE);
-        nameText.setText(toAddUsername);
+//        searchedUserLayout.setVisibility(View.VISIBLE);
+//        nameText.setText(toAddUsername);
     }
 
+    private void searchUserAvatar(){
+        OkHttpUtils<String> utils = new OkHttpUtils<>(AddContactActivity.this);
+        utils.setRequestUrl(I.REQUEST_FIND_USER)
+                .addParam(I.User.USER_NAME,toAddUsername)
+                .targetClass(String.class)
+                .execute(new OkHttpUtils.OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        progressDialog.dismiss();
+                        Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+                        L.e("result="+result);
+                        if(result!=null && result.isRetMsg()){
+                            UserAvatar user = (UserAvatar) result.getRetData();
+                            if(user!=null){
+
+                            }
+                        }else{
+                            CommonUtils.showShortResultMsg(result==null?R.string.group_search_failed:result.getRetCode());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        progressDialog.dismiss();
+                        CommonUtils.showShortToast(error);
+                    }
+                });
+    }
     /**
      *  add contact
      * @param view
