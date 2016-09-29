@@ -66,6 +66,7 @@ import cn.ucai.superwechat.dialog.TitleMenu.TitlePopup;
 import cn.ucai.superwechat.runtimepermissions.PermissionsManager;
 import cn.ucai.superwechat.runtimepermissions.PermissionsResultAction;
 import cn.ucai.superwechat.utils.L;
+import cn.ucai.superwechat.utils.MFGT;
 import cn.ucai.superwechat.widget.DMTabHost;
 import cn.ucai.superwechat.widget.MFViewPager;
 
@@ -178,7 +179,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
     private void initPopWindow() {
         titlePopup = new TitlePopup(this, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        titlePopup.setItemOnClickListener(null);
+        titlePopup.setItemOnClickListener(mOnItemOnClickListener);
         // 给标题栏弹窗添加子类
         titlePopup.addAction(new ActionItem(this, R.string.menu_groupchat,
                 R.drawable.icon_menu_group));
@@ -189,6 +190,23 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
         titlePopup.addAction(new ActionItem(this, R.string.menu_money,
                 R.drawable.icon_menu_money));
     }
+
+    private TitlePopup.OnItemOnClickListener mOnItemOnClickListener = new TitlePopup.OnItemOnClickListener() {
+        @Override
+        public void onItemClick(ActionItem item, int position) {
+            switch (position){
+                case 0:
+                    break;
+                case 1:
+                    MFGT.startActivity(MainActivity.this,AddContactActivity.class);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        }
+    };
 
     /**
      * init views
