@@ -95,6 +95,8 @@ public class SuperWeChatHelper {
 	private SuperWeChatModel demoModel = null;
 
     private UserAvatar currentUserAvatar;
+
+    private Map<String, UserAvatar> appContactList;
 	
 	/**
      * sync groups status listener
@@ -1271,4 +1273,59 @@ public class SuperWeChatHelper {
         easeUI.popActivity(activity);
     }
 
+    /**
+     * update contact list
+     *
+     * @param aContactList
+     */
+    public void setAppContactList(Map<String, UserAvatar> aContactList) {
+        if(aContactList == null){
+            if (appContactList != null) {
+                appContactList.clear();
+            }
+            return;
+        }
+
+        appContactList = aContactList;
+    }
+
+    /**
+     * save single contact
+     */
+    public void saveAppContact(UserAvatar user){
+        appContactList.put(user.getMUserName(), user);
+        demoModel.saveAppContact(user);
+    }
+
+    /**
+     * get contact list
+     *
+     * @return
+     */
+    public Map<String, UserAvatar> getAppContactList() {
+        if (isLoggedIn() && appContactList == null) {
+            appContactList = demoModel.getAppContactList();
+        }
+
+        // return a empty non-null object to avoid app crash
+        if(appContactList == null){
+            return new Hashtable<String, UserAvatar>();
+        }
+
+        return appContactList;
+    }
+
+    /**
+     * update user list to cache and database
+     *
+     * @param contactInfoList
+     */
+    public void updateAppContactList(List<UserAvatar> contactInfoList) {
+        for (UserAvatar u : contactInfoList) {
+            appContactList.put(u.getMUserName(), u);
+        }
+        ArrayList<UserAvatar> mList = new ArrayList<UserAvatar>();
+        mList.addAll(appContactList.values());
+        demoModel.saveAppContactList(mList);
+    }
 }

@@ -123,4 +123,39 @@ public class UserDao {
 	public void updateUserAvatar(UserAvatar user){
 		SuperWeChatDBManager.getInstance().updateUserAvatar(user);
 	}
+
+	/**
+	 * save contact list
+	 *
+	 * @param contactList
+	 */
+	public void saveAppContactList(List<UserAvatar> contactList) {
+		SuperWeChatDBManager.getInstance().saveAppContactList(contactList);
+	}
+
+	/**
+	 * get contact list
+	 *
+	 * @return
+	 */
+	public Map<String, UserAvatar> getAppContactList() {
+
+		return SuperWeChatDBManager.getInstance().getAppContactList();
+	}
+
+	/**
+	 * delete a contact
+	 * @param username
+	 */
+	public void deleteAppContact(String username){
+		SuperWeChatDBManager.getInstance().deleteAppContact(username);
+	}
+
+	/**
+	 * save a contact
+	 * @param user
+	 */
+	public void saveAppContact(UserAvatar user){
+		SuperWeChatDBManager.getInstance().saveAppContact(user);
+	}
 }
