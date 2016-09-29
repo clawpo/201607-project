@@ -417,6 +417,11 @@ public class SuperWeChatDBManager {
         if(user!=null && db.isOpen()){
             ContentValues values = new ContentValues();
             values.put(UserDao.USER_COLUMN_NAME_NICK,user.getMUserNick());
+            values.put(UserDao.USER_COLUMN_AVATAR_ID,user.getMAvatarId());
+            values.put(UserDao.USER_COLUMN_AVATAR_PATH,user.getMAvatarPath());
+            values.put(UserDao.USER_COLUMN_AVATAR_SUFFIX,user.getMAvatarSuffix());
+            values.put(UserDao.USER_COLUMN_AVATAR_TYPE,user.getMAvatarType());
+            values.put(UserDao.USER_COLUMN_AVATAR_LAST_UPDATE_TIME,user.getMAvatarLastUpdateTime());
             db.update(UserDao.USER_TABLE_NAME, values,
                     UserDao.USER_COLUMN_NAME_ID + " = ?", new String[]{user.getMUserName()});
         }

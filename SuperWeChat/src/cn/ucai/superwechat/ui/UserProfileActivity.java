@@ -43,6 +43,7 @@ import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.ResultUtils;
 import cn.ucai.superwechat.utils.UserUtils;
 
 public class UserProfileActivity extends BaseActivity {
@@ -181,7 +182,8 @@ public class UserProfileActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    updateLocalNick(nickName);
+                    user.setMUserNick(nickName);
+                    updateLocalUser();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -196,8 +198,7 @@ public class UserProfileActivity extends BaseActivity {
         }).start();
     }
 
-    private void updateLocalNick(String nickName) {
-        user.setMUserNick(nickName);
+    private void updateLocalUser() {
         SuperWeChatHelper.getInstance().saveCurrentUserAvatar(user);
     }
 
@@ -238,18 +239,23 @@ public class UserProfileActivity extends BaseActivity {
     private void uploadUserAvatar(final Intent data) {
         dialog = ProgressDialog.show(this, getString(R.string.dl_update_photo), getString(R.string.dl_waiting));
         File file = saveBitmapFile(data);
-        OkHttpUtils<Result> utils = new OkHttpUtils<>(UserProfileActivity.this);
+        OkHttpUtils<String> utils = new OkHttpUtils<>(UserProfileActivity.this);
         utils.setRequestUrl(I.REQUEST_UPDATE_AVATAR)
                 .addParam(I.NAME_OR_HXID,user.getMUserName())
                 .addParam(I.AVATAR_TYPE,I.AVATAR_TYPE_USER_PATH)
-                .targetClass(Result.class)
+                .targetClass(String.class)
                 .addFile2(file)
                 .post()
-                .execute(new OkHttpUtils.OnCompleteListener<Result>() {
+                .execute(new OkHttpUtils.OnCompleteListener<String>() {
                     @Override
-                    public void onSuccess(Result result) {
-                        L.e("result = "+result);
+                    public void onSuccess(String s) {
+                        L.e("s="+s);
+                        Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+                        L.e("result="+result);
                         if(result!=null && result.isRetMsg()){
+                            UserAvatar u= (UserAvatar) result.getRetData();
+                            user = u;
+                            updateLocalUser();
                             setPicToView(data);
                         }else{
                             dialog.dismiss();
