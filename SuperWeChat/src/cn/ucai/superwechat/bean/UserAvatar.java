@@ -2,6 +2,8 @@ package cn.ucai.superwechat.bean;
 
 import java.io.Serializable;
 
+import cn.ucai.superwechat.utils.UserUtils;
+
 public class UserAvatar implements Serializable {
 	private String muserName;
 	private String muserNick;
@@ -10,6 +12,11 @@ public class UserAvatar implements Serializable {
 	private String mavatarSuffix;
 	private Integer mavatarType;
 	private String mavatarLastUpdateTime;
+
+	/**
+	 * initial letter for nickname
+	 */
+	protected String initialLetter;
 	
 	public UserAvatar() {
 		super();
@@ -82,7 +89,18 @@ public class UserAvatar implements Serializable {
 	public String getMAvatarSuffix() {
 		return mavatarSuffix;
 	}
-	
+
+	public String getInitialLetter() {
+		if(initialLetter == null){
+			UserUtils.setUserInitialLetter(this);
+		}
+		return initialLetter;
+	}
+
+	public void setInitialLetter(String initialLetter) {
+		this.initialLetter = initialLetter;
+	}
+
 	@Override
 	public String toString() {
 		return "UserAvatar [muserName=" + muserName + ", muserNick=" + muserNick + ", mavatarId=" + mavatarId
