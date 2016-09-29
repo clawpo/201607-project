@@ -47,6 +47,7 @@
 
     <!--UserInfo-->
     <string name="userinfo_txt_title">个人信息</string>
+    <string name="userinfo_txt_profile">详细资料</string>
     <string name="userinfo_txt_avatar">头像</string>
     <string name="userinfo_txt_nick">昵称</string>
     <string name="userinfo_txt_name">微信号</string>
@@ -57,6 +58,11 @@
     <string name="userinfo_txt_sign">个性签名</string>
     <string name="userinfo_txt_noinput">未填写</string>
     <string name="userinfo_txt_nosettings">未设置</string>
+    <string name="userinfo_txt_note_mark">设置备注和标签</string>
+    <string name="userinfo_btn_add_contact">添加到通讯录</string>
+    <string name="userinfo_btn_send_msg">发消息</string>
+    <string name="userinfo_btn_send_video">视频聊天</string>
+    <string name="userinfo_txt_wechat_no">微信号:</string>
 
     <!-- Dicover-->
     <string name="discover_txt_pengyouquan">朋友圈</string>

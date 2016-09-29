@@ -14,6 +14,8 @@ import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.bean.UserAvatar;
 
+import static cn.ucai.superwechat.utils.CommonUtils.getWeChatNoString;
+
 /**
  * Created by clawpo on 2016/9/28.
  */
@@ -45,9 +47,9 @@ public class UserUtils {
         if(textView != null){
             UserAvatar user = getUserInfo(username);
             if(user != null && user.getMUserName() != null){
-                textView.setText(user.getMUserName());
+                textView.setText(getWeChatNoString()+user.getMUserName());
             }else{
-                setText(username,textView);
+                setText(getWeChatNoString()+username,textView);
             }
         }
     }
@@ -75,8 +77,12 @@ public class UserUtils {
     public static void setUserAvatar(Context context, String username, ImageView imageView){
         L.e("setUserAvatar username="+username);
         UserAvatar user = getUserInfo(username);
-        if(username != null && user.getMAvatarSuffix()!=null){
-            String path = getUserAvatarPath(username,user.getMAvatarSuffix(),user.getMAvatarLastUpdateTime());
+        setAvatar(context,user,imageView);
+    }
+
+    public static void setAvatar(Context context, UserAvatar user, ImageView imageView) {
+        if(user != null && user.getMAvatarSuffix()!=null){
+            String path = getUserAvatarPath(user.getMUserName(),user.getMAvatarSuffix(),user.getMAvatarLastUpdateTime());
             L.e("avatar path="+path);
             try {
                 Glide.with(context).load(path).into(imageView);

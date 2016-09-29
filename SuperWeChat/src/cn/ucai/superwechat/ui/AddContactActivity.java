@@ -140,7 +140,7 @@ public class AddContactActivity extends BaseActivity {
                         if(result!=null && result.isRetMsg()){
                             UserAvatar user = (UserAvatar) result.getRetData();
                             if(user!=null){
-
+                                MFGT.gotoFrientActivity(AddContactActivity.this,user);
                             }
                         }else{
                             CommonUtils.showShortResultMsg(result==null?R.string.group_search_failed:result.getRetCode());

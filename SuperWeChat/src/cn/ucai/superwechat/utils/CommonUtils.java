@@ -37,4 +37,8 @@ public class CommonUtils {
         }
         return resId;
     }
+
+    public static String getWeChatNoString(){
+        return SuperWeChatApplication.getInstance().getString(R.string.userinfo_txt_wechat_no);
+    }
 }

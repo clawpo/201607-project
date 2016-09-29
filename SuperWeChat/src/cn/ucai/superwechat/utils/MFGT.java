@@ -6,6 +6,8 @@ import android.content.Intent;
 import com.hyphenate.chat.EMClient;
 
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.ui.FrientProfileActivity;
 import cn.ucai.superwechat.ui.LoginActivity;
 import cn.ucai.superwechat.ui.MainActivity;
 import cn.ucai.superwechat.ui.RegisterActivity;
@@ -41,6 +43,11 @@ public class MFGT {
         Intent intent = new Intent();
         intent.setClass(context,cls);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+    }
+
+    public static void gotoFrientActivity(Activity context, UserAvatar user) {
+        context.startActivity(new Intent(context, FrientProfileActivity.class).putExtra("user", user));
         context.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
     }
 }

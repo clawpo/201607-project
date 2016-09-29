@@ -90,6 +90,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <!--好友详细资料-->
+        <activity
+            android:name="cn.ucai.superwechat.ui.FrientProfileActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <!-- 注册 -->
         <activity
             android:name="cn.ucai.superwechat.ui.RegisterActivity"
