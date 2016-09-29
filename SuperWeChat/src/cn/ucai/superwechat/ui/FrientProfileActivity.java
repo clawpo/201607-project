@@ -11,6 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
@@ -57,8 +58,18 @@ public class FrientProfileActivity extends BaseActivity {
             UserUtils.setUserNick(user.getMUserNick(),mTvUserinfoNick);
             UserUtils.setUserName(user.getMUserName(),mTvUserinfoName);
             UserUtils.setAvatar(FrientProfileActivity.this,user,mProfileImage);
+            isFrient();
         }else{
             MFGT.finish(FrientProfileActivity.this);
+        }
+    }
+
+    private void isFrient() {
+        if(SuperWeChatHelper.getInstance().getAppContactList().containsKey(user.getMUserName())){
+            mBtnSendMsg.setVisibility(View.VISIBLE);
+            mBtnSendVideo.setVisibility(View.VISIBLE);
+        }else{
+            mBtnAddContact.setVisibility(View.VISIBLE);
         }
     }
 
