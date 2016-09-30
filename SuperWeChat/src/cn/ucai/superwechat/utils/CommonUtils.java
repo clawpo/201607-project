@@ -41,4 +41,8 @@ public class CommonUtils {
     public static String getWeChatNoString(){
         return SuperWeChatApplication.getInstance().getString(R.string.userinfo_txt_wechat_no);
     }
+
+    public static String getAddContactPrefixString(){
+        return SuperWeChatApplication.getInstance().getString(R.string.addcontact_send_msg_prefix);
+    }
 }
