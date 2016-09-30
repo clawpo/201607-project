@@ -211,6 +211,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		pd.setMessage(str1);
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
+		L.e("acceptInvitation","acceptInvitation......");
 
 		new Thread(new Runnable() {
 			public void run() {
@@ -238,6 +239,9 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 							buttonAgree.setEnabled(false);
 							buttonAgree.setVisibility(View.GONE);
 							buttonRefuse.setVisibility(View.VISIBLE);
+							buttonRefuse.setText(str2);
+							buttonRefuse.setBackgroundDrawable(null);
+							L.e("acceptInvitation","acceptInvitation..2....");
 						}
 					});
 				} catch (final Exception e) {
