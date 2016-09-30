@@ -319,7 +319,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
             @Override
             public void onReceive(Context context, Intent intent) {
 //                updateUnreadLabel();
-//                updateUnreadAddressLable();
+                updateUnreadAddressLable();
 //                if (currentTabIndex == 0) {
 //                    // refresh conversation list
 //                    if (conversationListFragment != null) {
@@ -446,23 +446,23 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 //            unreadLabel.setVisibility(View.INVISIBLE);
 //        }
 //    }
-//
-//    /**
-//     * update the total unread count
-//     */
-//    public void updateUnreadAddressLable() {
-//        runOnUiThread(new Runnable() {
-//            public void run() {
-//                int count = getUnreadAddressCountTotal();
-//                if (count > 0) {
-//                    unreadAddressLable.setVisibility(View.VISIBLE);
-//                } else {
-//                    unreadAddressLable.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//        });
-//
-//    }
+
+    /**
+     * update the total unread count
+     */
+    public void updateUnreadAddressLable() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                int count = getUnreadAddressCountTotal();
+                if (count > 0) {
+                    tabHost.setHasNew(1,true);
+                } else {
+                    tabHost.setHasNew(1,false);
+                }
+            }
+        });
+
+    }
 
     /**
      * get unread event notification count, including application, accepted, etc
@@ -497,7 +497,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
         if (!isConflict && !isCurrentAccountRemoved) {
 //            updateUnreadLabel();
-//            updateUnreadAddressLable();
+            updateUnreadAddressLable();
         }
 
         // unregister this event listener when this activity enters the
