@@ -53,6 +53,8 @@
     <Button
         android:id="@+id/btn_send"
         style="@style/btn_titleStyle"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:text="@string/addcontact_send_msg"
         android:visibility="gone" />
 </RelativeLayout>
