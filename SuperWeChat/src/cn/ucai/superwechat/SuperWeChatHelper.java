@@ -47,7 +47,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.ucai.superwechat.bean.Result;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.db.SuperWeChatDBManager;
 import cn.ucai.superwechat.db.UserDao;
@@ -61,7 +63,9 @@ import cn.ucai.superwechat.ui.ChatActivity;
 import cn.ucai.superwechat.ui.MainActivity;
 import cn.ucai.superwechat.ui.VideoCallActivity;
 import cn.ucai.superwechat.ui.VoiceCallActivity;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.PreferenceManager;
+import cn.ucai.superwechat.utils.ResultUtils;
 
 public class SuperWeChatHelper {
     /**
@@ -597,12 +601,13 @@ public class SuperWeChatHelper {
     
     /***
      * 好友变化listener
-     * 
+     *
      */
     public class MyContactListener implements EMContactListener {
 
         @Override
         public void onContactAdded(String username) {
+            L.e("MyContactListener","onContactAdded,username="+username);
             // save contact
             Map<String, EaseUser> localUsers = getContactList();
             Map<String, EaseUser> toAddUsers = new HashMap<String, EaseUser>();
@@ -614,11 +619,41 @@ public class SuperWeChatHelper {
             toAddUsers.put(username, user);
             localUsers.putAll(toAddUsers);
 
+            OkHttpUtils<String> utils = new OkHttpUtils<>(appContext);
+            utils.setRequestUrl(I.REQUEST_ADD_CONTACT)
+                    .addParam(I.Contact.USER_NAME,currentUserAvatar.getMUserName())
+                    .addParam(I.Contact.CU_NAME,username)
+                    .targetClass(String.class)
+                    .execute(new OkHttpUtils.OnCompleteListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            L.e(TAG,"s="+s);
+                            Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+                            Log.e(TAG,"result="+result);
+                            if(result!=null && result.isRetMsg()) {
+
+                                Map<String, UserAvatar> appLocalUsers = getAppContactList();
+                                Map<String, UserAvatar> appToAddUsers = new HashMap<>();
+                                UserAvatar user = (UserAvatar) result.getRetData();
+                                userDao.saveAppContact(user);
+                                appToAddUsers.put(user.getMUserName(),user);
+                                appLocalUsers.putAll(appToAddUsers);
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(String error) {
+
+                        }
+                    });
+
             broadcastManager.sendBroadcast(new Intent(Constant.ACTION_CONTACT_CHANAGED));
         }
 
         @Override
         public void onContactDeleted(String username) {
+            L.e("MyContactListener","onContactDeleted,username="+username);
             Map<String, EaseUser> localUsers = SuperWeChatHelper.getInstance().getContactList();
             localUsers.remove(username);
             userDao.deleteContact(username);
@@ -629,6 +664,7 @@ public class SuperWeChatHelper {
 
         @Override
         public void onContactInvited(String username, String reason) {
+            L.e("MyContactListener","onContactInvited,username="+username+",reason="+reason);
             List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 
             for (InviteMessage inviteMessage : msgs) {
@@ -650,6 +686,7 @@ public class SuperWeChatHelper {
 
         @Override
         public void onContactAgreed(String username) {
+            L.e("MyContactListener","onContactAgreed,username="+username);
             List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
             for (InviteMessage inviteMessage : msgs) {
                 if (inviteMessage.getFrom().equals(username)) {

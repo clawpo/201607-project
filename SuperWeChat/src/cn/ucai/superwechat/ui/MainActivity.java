@@ -148,14 +148,15 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
     private void initMainTab() {
         conversationListFragment = new ConversationListFragment();
+        contactListFragment = new ContactListFragment();
         tabHost.setChecked(0);
         adapter = new MainTabAdpter(getSupportFragmentManager());
         viewpager.setAdapter(adapter);
         adapter.clear();
 //        viewpager.setScrollble(false);
         viewpager.setOffscreenPageLimit(4);
-        adapter.addFragment(new ConversationListFragment(), getString(R.string.app_name));
-        adapter.addFragment(new ContactListFragment(), getString(R.string.contacts));
+        adapter.addFragment(conversationListFragment, getString(R.string.app_name));
+        adapter.addFragment(contactListFragment, getString(R.string.contacts));
         adapter.addFragment(new DicoverFragment(), getString(R.string.discover));
         adapter.addFragment(new ProfileFragment(), getString(R.string.me));
         adapter.notifyDataSetChanged();
@@ -327,7 +328,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 //                    }
 //                } else if (currentTabIndex == 1) {
 //                    if (contactListFragment != null) {
-//                        contactListFragment.refresh();
+                        contactListFragment.refresh();
 //                    }
 //                }
                 String action = intent.getAction();

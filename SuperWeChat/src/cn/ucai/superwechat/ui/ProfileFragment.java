@@ -47,9 +47,11 @@ public class ProfileFragment extends Fragment {
 
     private void setUserInfo() {
         UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
-        UserUtils.setUserNick(user.getMUserNick(),mTvname);
-        UserUtils.setUserName(getWeChatNoString()+user.getMUserName(),mTvmsg);
-        UserUtils.setUserAvatar(SuperWeChatApplication.applicationContext,user.getMUserName(),mProfileImage);
+        if(user!=null) {
+            UserUtils.setUserNick(user.getMUserNick(), mTvname);
+            UserUtils.setUserName(getWeChatNoString() + user.getMUserName(), mTvmsg);
+            UserUtils.setUserAvatar(SuperWeChatApplication.applicationContext, user.getMUserName(), mProfileImage);
+        }
     }
 
     @Override
