@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/ease_mm_listitem_grey"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -72,16 +71,14 @@
 
         <Button
             android:id="@+id/agree"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/btn_titleStyle"
             android:layout_toLeftOf="@+id/user_state"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
             android:paddingLeft="7dp"
             android:paddingRight="7dp"
             android:text="@string/agree"
-            android:textSize="13sp"
-            android:visibility="gone" />
+            android:textSize="13sp" />
         
         <Button
             android:id="@+id/user_state"
@@ -93,7 +90,8 @@
             android:paddingLeft="7dp"
             android:paddingRight="7dp"
             android:text="@string/refuse"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -109,7 +107,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="3dp"
             android:background="#dfdfdf" />
-        <LinearLayout 
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
@@ -133,5 +131,11 @@
         </LinearLayout>
         
     </LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/black3" />
 
 </LinearLayout>

@@ -40,6 +40,15 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="btn_titleStyle">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:background">@drawable/btn_bg_green</item>
+        <item name="android:layout_marginRight">10dp</item>
+    </style>
+
     <style name="list_txt_Style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">45dp</item>

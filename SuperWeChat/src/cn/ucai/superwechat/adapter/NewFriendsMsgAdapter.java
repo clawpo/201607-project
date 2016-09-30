@@ -16,9 +16,20 @@ package cn.ucai.superwechat.adapter;
 import java.util.List;
 
 import com.hyphenate.chat.EMClient;
+
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.bean.Result;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.domain.InviteMessage;
+import cn.ucai.superwechat.ui.AddContactActivity;
+import cn.ucai.superwechat.utils.CommonUtils;
+import cn.ucai.superwechat.utils.L;
+import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.ResultUtils;
+import cn.ucai.superwechat.utils.UserUtils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -89,22 +100,48 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			} else{
 				holder.groupContainer.setVisibility(View.GONE);
 			}
+
+			OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+			utils.setRequestUrl(I.REQUEST_FIND_USER)
+					.addParam(I.User.USER_NAME,msg.getFrom())
+					.targetClass(String.class)
+					.execute(new OkHttpUtils.OnCompleteListener<String>() {
+						@Override
+						public void onSuccess(String s) {
+							Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+							L.e("result="+result);
+							if(result!=null && result.isRetMsg()){
+								UserAvatar user = (UserAvatar) result.getRetData();
+								if(user!=null){
+									UserUtils.setUserNick(user.getMUserNick(),holder.name);
+									UserUtils.setAvatar(context,user,holder.avator);
+								}
+							}else{
+								holder.name.setText(msg.getFrom());
+							}
+						}
+
+						@Override
+						public void onError(String error) {
+						}
+					});
 			
 			holder.reason.setText(msg.getReason());
-			holder.name.setText(msg.getFrom());
+
 			// holder.time.setText(DateUtils.getTimestampString(new
 			// Date(msg.getTime())));
 			if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEAGREED) {
-				holder.status.setVisibility(View.INVISIBLE);
+				holder.status.setVisibility(View.GONE);
 				holder.reason.setText(str1);
-			} else if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEINVITEED || msg.getStatus() == InviteMessage.InviteMesageStatus.BEAPPLYED ||
+			} else if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEINVITEED ||
+					msg.getStatus() == InviteMessage.InviteMesageStatus.BEAPPLYED ||
 			        msg.getStatus() == InviteMessage.InviteMesageStatus.GROUPINVITATION) {
 			    holder.agree.setVisibility(View.VISIBLE);
                 holder.agree.setEnabled(true);
-                holder.agree.setBackgroundResource(android.R.drawable.btn_default);
+//                holder.agree.setBackgroundResource(android.R.drawable.btn_default);
                 holder.agree.setText(str2);
 			    
-				holder.status.setVisibility(View.VISIBLE);
+				holder.status.setVisibility(View.GONE);
 				holder.status.setEnabled(true);
 				holder.status.setBackgroundResource(android.R.drawable.btn_default);
 				holder.status.setText(str7);
