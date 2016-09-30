@@ -13,24 +13,6 @@
  */
 package cn.ucai.superwechat.adapter;
 
-import java.util.List;
-
-import com.hyphenate.chat.EMClient;
-
-import cn.ucai.superwechat.I;
-import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.bean.Result;
-import cn.ucai.superwechat.bean.UserAvatar;
-import cn.ucai.superwechat.data.OkHttpUtils;
-import cn.ucai.superwechat.db.InviteMessgeDao;
-import cn.ucai.superwechat.domain.InviteMessage;
-import cn.ucai.superwechat.ui.AddContactActivity;
-import cn.ucai.superwechat.utils.CommonUtils;
-import cn.ucai.superwechat.utils.L;
-import cn.ucai.superwechat.utils.MFGT;
-import cn.ucai.superwechat.utils.ResultUtils;
-import cn.ucai.superwechat.utils.UserUtils;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -45,6 +27,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hyphenate.chat.EMClient;
+
+import java.util.List;
+
+import cn.ucai.superwechat.I;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.bean.Result;
+import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
+import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.domain.InviteMessage;
+import cn.ucai.superwechat.utils.L;
+import cn.ucai.superwechat.utils.ResultUtils;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
@@ -67,7 +64,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			holder.reason = (TextView) convertView.findViewById(R.id.message);
 			holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.agree = (Button) convertView.findViewById(R.id.agree);
-			holder.status = (Button) convertView.findViewById(R.id.user_state);
+			holder.status = (TextView) convertView.findViewById(R.id.user_state);
 			holder.groupContainer = (LinearLayout) convertView.findViewById(R.id.ll_group);
 			holder.groupname = (TextView) convertView.findViewById(R.id.tv_groupName);
 			// holder.time = (TextView) convertView.findViewById(R.id.time);
@@ -131,7 +128,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			// holder.time.setText(DateUtils.getTimestampString(new
 			// Date(msg.getTime())));
 			if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEAGREED) {
-				holder.status.setVisibility(View.GONE);
+				holder.status.setVisibility(View.VISIBLE);
 				holder.reason.setText(str1);
 			} else if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEINVITEED ||
 					msg.getStatus() == InviteMessage.InviteMesageStatus.BEAPPLYED ||
@@ -201,11 +198,12 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 	/**
 	 * accept invitation
-	 * 
-	 * @param button
-	 * @param username
+	 *
+	 * @param buttonAgree
+	 * @param buttonRefuse
+	 * @param msg
 	 */
-	private void acceptInvitation(final Button buttonAgree, final Button buttonRefuse, final InviteMessage msg) {
+	private void acceptInvitation(final Button buttonAgree, final TextView buttonRefuse, final InviteMessage msg) {
 		final ProgressDialog pd = new ProgressDialog(context);
 		String str1 = context.getResources().getString(R.string.Are_agree_with);
 		final String str2 = context.getResources().getString(R.string.Has_agreed_to);
@@ -260,10 +258,11 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 	/**
      * decline invitation
      * 
-     * @param button
-     * @param username
+     * @param buttonAgree
+     * @param buttonRefuse
+	 * @param msg
      */
-    private void refuseInvitation(final Button buttonAgree, final Button buttonRefuse, final InviteMessage msg) {
+    private void refuseInvitation(final Button buttonAgree, final TextView buttonRefuse, final InviteMessage msg) {
         final ProgressDialog pd = new ProgressDialog(context);
         String str1 = context.getResources().getString(R.string.Are_refuse_with);
         final String str2 = context.getResources().getString(R.string.Has_refused_to);
@@ -320,7 +319,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		TextView name;
 		TextView reason;
         Button agree;
-		Button status;
+		TextView status;
 		LinearLayout groupContainer;
 		TextView groupname;
 		// TextView time;
