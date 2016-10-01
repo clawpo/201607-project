@@ -163,6 +163,6 @@ public class FrientProfileActivity extends BaseActivity {
 
     @OnClick(R.id.btn_send_msg)
      public void toChat(){
-
+        MFGT.gotoChat(FrientProfileActivity.this,user.getMUserName());
     }
 }
