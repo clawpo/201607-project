@@ -176,8 +176,9 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
                 for(int i=0;i<count;i++){
                     final EaseUser user = mOriginalList.get(i);
                     String username = user.getUsername();
+                    String nickname = user.getNick();
                     
-                    if(username.startsWith(prefixString)){
+                    if(username.contains(prefixString) || nickname.contains(prefixString)){
                         newValues.add(user);
                     }
                     else{
