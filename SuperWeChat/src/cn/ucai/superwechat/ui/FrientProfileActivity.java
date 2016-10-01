@@ -88,6 +88,11 @@ public class FrientProfileActivity extends BaseActivity {
         mTxtTitle.setText(R.string.userinfo_txt_profile);
     }
 
+    @Override
+    public void back(View view) {
+        MFGT.finish(FrientProfileActivity.this);
+    }
+
     @OnClick(R.id.img_back)
     public void back() {
         MFGT.finish(FrientProfileActivity.this);
