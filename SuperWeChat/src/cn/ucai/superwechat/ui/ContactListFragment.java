@@ -39,9 +39,12 @@ import java.util.Map;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.SuperWeChatHelper.DataSyncListener;
+import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.widget.ContactItemView;
 
 /**
@@ -78,9 +81,17 @@ public class ContactListFragment extends EaseContactListFragment {
     @Override
     public void refresh() {
         Map<String, EaseUser> m = SuperWeChatHelper.getInstance().getContactList();
+        Map<String, UserAvatar> users = SuperWeChatHelper.getInstance().getAppContactList();
         if (m instanceof Hashtable<?, ?>) {
             //noinspection unchecked
             m = (Map<String, EaseUser>) ((Hashtable<String, EaseUser>)m).clone();
+            for (String name:users.keySet()){
+                L.e("contact","name="+name+",easeuser="+m.get(name));
+                if(m.get(name)!=null) {
+                    m.get(name).setAvatar(UserUtils.getUserAvatar(users.get(name)));
+                    m.get(name).setNick(users.get(name).getMUserNick());
+                }
+            }
         }
         setContactsMap(m);
         super.refresh();

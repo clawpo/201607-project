@@ -57,6 +57,17 @@ public class UserUtils {
         }
     }
 
+    public static String getUserAvatar(UserAvatar user){
+        if(user!=null){
+            if(user.getMUserName()!=null){
+                if(user.getMAvatarSuffix()!=null){
+                    return getUserAvatarPath(user.getMUserName(),user.getMAvatarSuffix(),user.getMAvatarLastUpdateTime());
+                }
+            }
+        }
+        return null;
+    }
+
     public static String getUserAvatarPath(String username, String suffix, String updateTime){
         //http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?
         // name_or_hxid=a952700&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
