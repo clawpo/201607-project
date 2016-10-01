@@ -64,10 +64,14 @@ public class FrientProfileActivity extends BaseActivity {
         if(intent!=null){
             user = (UserAvatar) intent.getSerializableExtra("user");
             L.e("user="+user);
-            UserUtils.setUserNick(user.getMUserNick(),mTvUserinfoNick);
-            UserUtils.setUserName(user.getMUserName(),mTvUserinfoName);
-            UserUtils.setAvatar(FrientProfileActivity.this,user,mProfileImage);
-            isFrient();
+            if(user!=null) {
+                UserUtils.setUserNick(user.getMUserNick(), mTvUserinfoNick);
+                UserUtils.setUserName(user.getMUserName(), mTvUserinfoName);
+                UserUtils.setAvatar(FrientProfileActivity.this, user, mProfileImage);
+                isFrient();
+            }else{
+                MFGT.finish(FrientProfileActivity.this);
+            }
         }else{
             MFGT.finish(FrientProfileActivity.this);
         }
@@ -155,5 +159,10 @@ public class FrientProfileActivity extends BaseActivity {
             progressDialog.show();
             addEMContact(reason);
         }
+    }
+
+    @OnClick(R.id.btn_send_msg)
+     public void toChat(){
+
     }
 }

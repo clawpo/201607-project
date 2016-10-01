@@ -66,6 +66,7 @@ import cn.ucai.superwechat.ui.VoiceCallActivity;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.PreferenceManager;
 import cn.ucai.superwechat.utils.ResultUtils;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class SuperWeChatHelper {
     /**
@@ -1125,6 +1126,7 @@ public class SuperWeChatHelper {
    }
    
    public void asyncFetchContactsFromServer(final EMValueCallBack<List<String>> callback){
+       L.e("asyncFetchContactsFromServer..............");
        if(isSyncingContactsWithServer){
            return;
        }
@@ -1196,6 +1198,41 @@ public class SuperWeChatHelper {
                
            }
        }.start();
+       L.e("currentUserAvatar="+currentUserAvatar);
+       OkHttpUtils<String> utils = new OkHttpUtils<>(appContext);
+       utils.setRequestUrl(I.REQUEST_DOWNLOAD_CONTACT_ALL_LIST)
+               .addParam(I.Contact.USER_NAME,EMClient.getInstance().getCurrentUser())
+               .targetClass(String.class)
+               .execute(new OkHttpUtils.OnCompleteListener<String>() {
+                   @Override
+                   public void onSuccess(String s) {
+                       L.e("s="+s);
+                       Result result = ResultUtils.getListResultFromJson(s, UserAvatar.class);
+                       Log.e(TAG,"result="+result);
+                       List<UserAvatar> list = (List<UserAvatar>) result.getRetData();
+                       if(list!=null && list.size()>0){
+                           Log.e(TAG,"list.size="+list.size());
+                           Map<String, UserAvatar> userlist = new HashMap<String, UserAvatar>();
+                           for (UserAvatar u : list) {
+                               UserUtils.setUserInitialLetter(u);
+                               userlist.put(u.getMUserName(), u);
+                           }
+                           // save the contact list to cache
+                           getAppContactList().clear();
+                           getAppContactList().putAll(userlist);
+                           // save the contact list to database
+                           UserDao dao = new UserDao(appContext);
+                           List<UserAvatar> users = new ArrayList<UserAvatar>(userlist.values());
+                           dao.saveAppContactList(users);
+                           updateAppContactList(list);
+                       }
+                   }
+
+                   @Override
+                   public void onError(String error) {
+
+                   }
+               });
    }
 
    public void notifyContactsSyncListener(boolean success){
