@@ -150,7 +150,7 @@ public class OkHttpUtils<T> {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case RESULT_ERROR:
-                        mListener.onError(msg.obj.toString());
+                        mListener.onError(msg.obj==null?msg.toString():msg.obj.toString());
                         break;
                     case RESULT_SUCCESS:
                         T result = (T) msg.obj;
