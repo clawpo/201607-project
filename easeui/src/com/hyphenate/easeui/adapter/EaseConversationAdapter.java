@@ -234,7 +234,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 for (int i = 0; i < count; i++) {
                     final EMConversation value = mOriginalValues.get(i);
                     String username = value.getUserName();
-                    
+
                     EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){
                         username = group.getGroupName();
@@ -246,7 +246,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                     }
 
                     // First match against the whole ,non-splitted value
-                    if (username.startsWith(prefixString)) {
+                    if (username.contains(prefixString)) {
                         newValues.add(value);
                     } else{
                           final String[] words = username.split(" ");
