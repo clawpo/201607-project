@@ -16,6 +16,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
 import cn.ucai.superwechat.utils.UserUtils;
 
@@ -47,10 +48,13 @@ public class ProfileFragment extends Fragment {
 
     private void setUserInfo() {
         UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
+        L.e("profile","user="+user);
         if(user!=null) {
             UserUtils.setUserNick(user.getMUserNick(), mTvname);
             UserUtils.setUserName(getWeChatNoString() + user.getMUserName(), mTvmsg);
             UserUtils.setUserAvatar(SuperWeChatApplication.applicationContext, user.getMUserName(), mProfileImage);
+        }else{
+            MFGT.gotoGuide(getActivity());
         }
     }
 
