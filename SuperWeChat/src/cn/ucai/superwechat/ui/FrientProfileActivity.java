@@ -68,6 +68,9 @@ public class FrientProfileActivity extends BaseActivity {
             if(user==null && username==null){
                 MFGT.finish(FrientProfileActivity.this);
             }
+            if(username.equals(SuperWeChatHelper.getInstance().getCurrentUsernName())){
+                user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
+            }
             if(user==null){
                 user = SuperWeChatHelper.getInstance().getAppContactList().get(username);
             }
