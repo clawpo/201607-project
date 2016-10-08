@@ -90,6 +90,11 @@ public class ContactListFragment extends EaseContactListFragment {
                 if(m.get(name)!=null) {
                     m.get(name).setAvatar(UserUtils.getUserAvatar(users.get(name)));
                     m.get(name).setNick(users.get(name).getMUserNick());
+                }else{
+                    EaseUser u = new EaseUser(name);
+                    u.setNick(users.get(name).getMUserNick());
+                    u.setAvatar(users.get(name).getMUserNick());
+                    ((Hashtable) m).put(name,u);
                 }
             }
         }

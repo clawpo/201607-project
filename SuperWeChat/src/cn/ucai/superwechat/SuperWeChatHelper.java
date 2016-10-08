@@ -940,6 +940,9 @@ public class SuperWeChatHelper {
         currentUserAvatar = user;
         UserDao dao = new UserDao(appContext);
         dao.updateUserAvatar(user);
+        EaseUser emuser = getUserProfileManager().getCurrentUserInfo();
+        emuser.setNick(user.getMUserNick());
+        emuser.setAvatar(UserUtils.getUserAvatar(user));
     }
 
     /**

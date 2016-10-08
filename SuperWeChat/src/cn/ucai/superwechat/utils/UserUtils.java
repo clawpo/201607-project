@@ -189,7 +189,6 @@ public class UserUtils {
                             if(user!=null){
                                 UserDao dao = new UserDao(context);
                                 dao.saveUserAvatar(user);
-                                SuperWeChatHelper.getInstance().setCurrentUserAvatar(user);
                                 SuperWeChatHelper.getInstance().saveCurrentUserAvatar(user);
                             }
                         }
