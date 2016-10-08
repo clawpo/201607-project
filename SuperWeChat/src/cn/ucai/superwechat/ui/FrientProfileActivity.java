@@ -63,11 +63,15 @@ public class FrientProfileActivity extends BaseActivity {
         Intent intent = getIntent();
         if(intent!=null){
             user = (UserAvatar) intent.getSerializableExtra("user");
-            L.e("user="+user);
+            String username = intent.getStringExtra("username");
+            L.e("username="+username+",user="+user);
+            if(user==null && username==null){
+                MFGT.finish(FrientProfileActivity.this);
+            }
+            if(user==null){
+                user = SuperWeChatHelper.getInstance().getAppContactList().get(username);
+            }
             if(user!=null) {
-                UserUtils.setUserNick(user.getMUserNick(), mTvUserinfoNick);
-                UserUtils.setUserName(user.getMUserName(), mTvUserinfoName);
-                UserUtils.setAvatar(FrientProfileActivity.this, user, mProfileImage);
                 isFrient();
             }else{
                 MFGT.finish(FrientProfileActivity.this);
@@ -78,6 +82,9 @@ public class FrientProfileActivity extends BaseActivity {
     }
 
     private void isFrient() {
+        UserUtils.setUserNick(user.getMUserNick(), mTvUserinfoNick);
+        UserUtils.setUserName(user.getMUserName(), mTvUserinfoName);
+        UserUtils.setAvatar(FrientProfileActivity.this, user, mProfileImage);
         if(SuperWeChatHelper.getInstance().getAppContactList().containsKey(user.getMUserName())){
             mBtnSendMsg.setVisibility(View.VISIBLE);
             mBtnSendVideo.setVisibility(View.VISIBLE);
