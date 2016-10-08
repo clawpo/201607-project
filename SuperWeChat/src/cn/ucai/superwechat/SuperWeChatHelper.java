@@ -608,7 +608,7 @@ public class SuperWeChatHelper {
 
         @Override
         public void onContactAdded(String username) {
-            L.e("MyContactListener","onContactAdded,username="+username);
+            L.e("MyContactListener","onContactAdded,username="+username+",current="+getCurrentUsernName());
             // save contact
             Map<String, EaseUser> localUsers = getContactList();
             Map<String, EaseUser> toAddUsers = new HashMap<String, EaseUser>();
@@ -622,7 +622,7 @@ public class SuperWeChatHelper {
 
             OkHttpUtils<String> utils = new OkHttpUtils<>(appContext);
             utils.setRequestUrl(I.REQUEST_ADD_CONTACT)
-                    .addParam(I.Contact.USER_NAME,currentUserAvatar.getMUserName())
+                    .addParam(I.Contact.USER_NAME,getCurrentUsernName())
                     .addParam(I.Contact.CU_NAME,username)
                     .targetClass(String.class)
                     .execute(new OkHttpUtils.OnCompleteListener<String>() {
@@ -924,9 +924,14 @@ public class SuperWeChatHelper {
     }
 
     public UserAvatar getCurrentUserAvatar(){
+        L.e("helper","currentname="+getCurrentUsernName());
         if(currentUserAvatar==null){
             UserDao dao = new UserDao(appContext);
-            currentUserAvatar = dao.getUserAvatar(EMClient.getInstance().getCurrentUser());
+            currentUserAvatar = dao.getUserAvatar(getCurrentUsernName());
+        }
+        if(currentUserAvatar==null){
+            currentUserAvatar = new UserAvatar();
+            currentUserAvatar.setMUserName(getCurrentUsernName());
         }
         return currentUserAvatar;
     }
@@ -1198,10 +1203,10 @@ public class SuperWeChatHelper {
                
            }
        }.start();
-       L.e("currentUserAvatar="+currentUserAvatar);
+       L.e("getCurrentUsernName="+getCurrentUsernName());
        OkHttpUtils<String> utils = new OkHttpUtils<>(appContext);
        utils.setRequestUrl(I.REQUEST_DOWNLOAD_CONTACT_ALL_LIST)
-               .addParam(I.Contact.USER_NAME,EMClient.getInstance().getCurrentUser())
+               .addParam(I.Contact.USER_NAME,getCurrentUsernName())
                .targetClass(String.class)
                .execute(new OkHttpUtils.OnCompleteListener<String>() {
                    @Override
@@ -1225,6 +1230,8 @@ public class SuperWeChatHelper {
                            List<UserAvatar> users = new ArrayList<UserAvatar>(userlist.values());
                            dao.saveAppContactList(users);
                            updateAppContactList(list);
+                           //notify sync success
+                           notifyContactsSyncListener(true);
                        }
                    }
 
@@ -1332,7 +1339,9 @@ public class SuperWeChatHelper {
         isBlackListSyncedWithServer = false;
 
         isGroupAndContactListenerRegisted = false;
-        
+
+        setCurrentUserAvatar(null);
+        setAppContactList(null);
         setContactList(null);
         setRobotList(null);
         getUserProfileManager().reset();

@@ -11,6 +11,7 @@ import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.UserUtils;
 
 /**
  * 开屏页
@@ -39,6 +40,9 @@ public class SplashActivity extends BaseActivity {
 					EMClient.getInstance().chatManager().loadAllConversations();
 					UserAvatar user = SuperWeChatHelper.getInstance().getCurrentUserAvatar();
 					L.e("splash,aotu login,user="+user);
+					if(user!=null && user.getMUserNick()==null){
+						UserUtils.asyncGetCurrentUserInfo(SplashActivity.this);
+					}
 					//enter main screen
 					MFGT.gotoMainActivity(SplashActivity.this);
 					finish();

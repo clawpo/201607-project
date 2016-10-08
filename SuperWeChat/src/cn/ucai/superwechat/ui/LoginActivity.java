@@ -228,7 +228,7 @@ public class LoginActivity extends BaseActivity {
 	private void saveUser2DB(UserAvatar user) {
 		UserDao dao = new UserDao(LoginActivity.this);
 		dao.saveUserAvatar(user);
-		SuperWeChatHelper.getInstance().setCurrentUserAvatar(user);
+		SuperWeChatHelper.getInstance().saveCurrentUserAvatar(user);
 	}
 
 

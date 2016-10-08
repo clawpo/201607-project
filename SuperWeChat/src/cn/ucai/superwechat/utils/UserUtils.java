@@ -15,7 +15,10 @@ import java.util.ArrayList;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.bean.Result;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
+import cn.ucai.superwechat.db.UserDao;
 
 import static cn.ucai.superwechat.utils.CommonUtils.getWeChatNoString;
 
@@ -167,5 +170,34 @@ public class UserUtils {
             letter = new GetInitialLetter().getLetter(user.getMUserName());
         }
         user.setInitialLetter(letter);
+    }
+
+    public static void asyncGetCurrentUserInfo(final Context context){
+        L.e("userutils","asyncGetCurrentUserInfo....");
+        String username = SuperWeChatHelper.getInstance().getCurrentUsernName();
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_FIND_USER)
+                .addParam(I.User.USER_NAME,username)
+                .targetClass(String.class)
+                .execute(new OkHttpUtils.OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        Result result = ResultUtils.getResultFromJson(s,UserAvatar.class);
+                        L.e("result="+result);
+                        if(result!=null && result.isRetMsg()){
+                            UserAvatar user = (UserAvatar) result.getRetData();
+                            if(user!=null){
+                                UserDao dao = new UserDao(context);
+                                dao.saveUserAvatar(user);
+                                SuperWeChatHelper.getInstance().setCurrentUserAvatar(user);
+                                SuperWeChatHelper.getInstance().saveCurrentUserAvatar(user);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                    }
+                });
     }
 }

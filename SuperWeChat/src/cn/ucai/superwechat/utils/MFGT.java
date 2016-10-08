@@ -7,8 +7,10 @@ import com.hyphenate.chat.EMClient;
 
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.common.ExitAppUtils;
 import cn.ucai.superwechat.ui.ChatActivity;
 import cn.ucai.superwechat.ui.FrientProfileActivity;
+import cn.ucai.superwechat.ui.GuideActivity;
 import cn.ucai.superwechat.ui.LoginActivity;
 import cn.ucai.superwechat.ui.MainActivity;
 import cn.ucai.superwechat.ui.RegisterActivity;
@@ -52,8 +54,21 @@ public class MFGT {
         context.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
     }
 
+    public static void gotoFrientActivity(Activity context, String username) {
+        context.startActivity(new Intent(context, FrientProfileActivity.class).putExtra("username", username));
+        context.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+    }
+
     public static void gotoChat(Activity context,String userId){
         context.startActivity(new Intent(context, ChatActivity.class).putExtra("userId", userId));
         context.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+    }
+
+    public static void gotoGuide(Activity context){
+        ExitAppUtils.getInstance().exit();
+        Intent it = new Intent(context, GuideActivity.class);
+        it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(it);
     }
 }
