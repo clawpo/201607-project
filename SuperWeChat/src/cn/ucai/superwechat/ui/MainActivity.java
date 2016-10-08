@@ -259,7 +259,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
             for (EMMessage message : messages) {
                 SuperWeChatHelper.getInstance().getNotifier().onNewMsg(message);
             }
-//            refreshUIWithMessage();
+            refreshUIWithMessage();
         }
 
         @Override
@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
                 }
             }
             //end of red packet code
-//            refreshUIWithMessage();
+            refreshUIWithMessage();
         }
 
         @Override
@@ -289,20 +289,20 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
         }
     };
 
-//    private void refreshUIWithMessage() {
-//        runOnUiThread(new Runnable() {
-//            public void run() {
-//                // refresh unread count
-//                updateUnreadLabel();
-//                if (currentTabIndex == 0) {
-//                    // refresh conversation list
-//                    if (conversationListFragment != null) {
-//                        conversationListFragment.refresh();
-//                    }
-//                }
-//            }
-//        });
-//    }
+    private void refreshUIWithMessage() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                // refresh unread count
+                updateUnreadLabel();
+                if (pageIndex == 0) {
+                    // refresh conversation list
+                    if (conversationListFragment != null) {
+                        conversationListFragment.refresh();
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     public void back(View view) {
@@ -319,7 +319,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
             @Override
             public void onReceive(Context context, Intent intent) {
-//                updateUnreadLabel();
+                updateUnreadLabel();
                 updateUnreadAddressLable();
 //                if (currentTabIndex == 0) {
 //                    // refresh conversation list
@@ -435,18 +435,18 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
 
     }
 
-//    /**
-//     * update unread message count
-//     */
-//    public void updateUnreadLabel() {
-//        int count = getUnreadMsgCountTotal();
+    /**
+     * update unread message count
+     */
+    public void updateUnreadLabel() {
+        int count = getUnreadMsgCountTotal();
+        L.e("main","updateUnreadLabel,count="+count);
 //        if (count > 0) {
-//            unreadLabel.setText(String.valueOf(count));
-//            unreadLabel.setVisibility(View.VISIBLE);
+            tabHost.setUnreadCount(0,count);
 //        } else {
-//            unreadLabel.setVisibility(View.INVISIBLE);
+//            tabHost.setHasNew(0,false);
 //        }
-//    }
+    }
 
     /**
      * update the total unread count
@@ -497,7 +497,7 @@ public class MainActivity extends BaseActivity implements DMTabHost.OnCheckedCha
         super.onResume();
 
         if (!isConflict && !isCurrentAccountRemoved) {
-//            updateUnreadLabel();
+            updateUnreadLabel();
             updateUnreadAddressLable();
         }
 
