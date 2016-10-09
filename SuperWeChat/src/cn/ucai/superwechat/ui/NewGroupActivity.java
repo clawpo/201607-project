@@ -164,6 +164,7 @@ public class NewGroupActivity extends BaseActivity {
                 final String groupName = groupNameEditText.getText().toString().trim();
                 String desc = introductionEditText.getText().toString();
                 String[] members = data.getStringArrayExtra("newmembers");
+                L.e(TAG,"newmembers="+members.toString());
                 try {
                     EMGroupOptions option = new EMGroupOptions();
                     option.maxUsers = 200;
@@ -310,6 +311,7 @@ public class NewGroupActivity extends BaseActivity {
             progressDialog.dismiss();
         }
     };
+
     private void addGroupMembers() {
         UserUtils.addGroupMembers(NewGroupActivity.this,emGroup,addMemberListener);
     }

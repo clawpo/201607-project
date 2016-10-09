@@ -248,11 +248,11 @@ public class UserUtils {
         }
         memberArr = memberArr.substring(0,memberArr.length()-1);
         L.e("addGroupMembers","memberArr="+memberArr);
-        OkHttpUtils<Result> utils = new OkHttpUtils<>(context);
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
         utils.setRequestUrl(I.REQUEST_ADD_GROUP_MEMBERS)
                 .addParam(I.Member.GROUP_HX_ID,emGroup.getGroupId())
                 .addParam(I.Member.USER_NAME,memberArr)
-                .targetClass(Result.class)
+                .targetClass(String.class)
                 .execute(listener);
     }
 }
