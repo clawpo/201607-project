@@ -223,7 +223,6 @@ public class ContactListFragment extends EaseContactListFragment {
 		getActivity().getMenuInflater().inflate(R.menu.context_contact_list, menu);
 	}
 
-
     @Override
 	public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -242,7 +241,7 @@ public class ContactListFragment extends EaseContactListFragment {
             }
 			return true;
 		}
-		return true;//super.onContextItemSelected(item);
+		return super.onContextItemSelected(item);
 	}
 
 
