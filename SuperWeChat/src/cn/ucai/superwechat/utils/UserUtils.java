@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.bean.GroupAvatar;
 import cn.ucai.superwechat.bean.Result;
 import cn.ucai.superwechat.bean.UserAvatar;
 import cn.ucai.superwechat.data.OkHttpUtils;
@@ -75,12 +76,16 @@ public class UserUtils {
     public static String getUserAvatarPath(String username, String suffix, String updateTime){
         //http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?
         // name_or_hxid=a952700&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
+        return getAvatarPath(username,suffix,updateTime,I.AVATAR_TYPE_USER_PATH);
+    }
+
+    public static String getAvatarPath(String username, String suffix, String updateTime,String type){
         StringBuilder path = new StringBuilder(I.SERVER_ROOT);
         path.append(I.REQUEST_DOWNLOAD_AVATAR)
                 .append(I.QUESTION)
                 .append(I.NAME_OR_HXID).append(I.EQUAL).append(username)
                 .append(I.AND)
-                .append(I.AVATAR_TYPE).append(I.EQUAL).append(I.AVATAR_TYPE_USER_PATH)
+                .append(I.AVATAR_TYPE).append(I.EQUAL).append(type)
                 .append(I.AND)
                 .append(I.Avatar.AVATAR_SUFFIX).append(I.EQUAL).append(suffix)
                 .append(I.AND)
@@ -95,10 +100,10 @@ public class UserUtils {
     public static void setUserAvatar(Context context, String username, ImageView imageView){
         L.e("setUserAvatar username="+username);
         UserAvatar user = getUserInfo(username);
-        setAvatar(context,user,imageView);
+        setUserAvatar(context,user,imageView);
     }
 
-    public static void setAvatar(Context context, UserAvatar user, ImageView imageView) {
+    public static void setUserAvatar(Context context, UserAvatar user, ImageView imageView) {
         if(user != null && user.getMAvatarSuffix()!=null){
             String path = getUserAvatarPath(user.getMUserName(),user.getMAvatarSuffix(),user.getMAvatarLastUpdateTime());
             L.e("avatar path="+path);
@@ -110,6 +115,40 @@ public class UserUtils {
             }
         }else{
             Glide.with(context).load(com.hyphenate.easeui.R.drawable.ease_default_avatar).into(imageView);
+        }
+    }
+
+    public static String getGroupAvatarPath(String hxid,String suffix, String updateTime){
+        return getAvatarPath(hxid,suffix,updateTime,I.AVATAR_TYPE_GROUP_PATH);
+    }
+
+    public static void setGroupAvatar(Context context, GroupAvatar group, ImageView imageView) {
+        if(group != null && group.getMAvatarSuffix()!=null){
+            String path = getGroupAvatarPath(group.getMGroupHxid(),group.getMAvatarSuffix(),group.getMAvatarLastUpdateTime());
+            L.e("avatar path="+path);
+            try {
+                Glide.with(context).load(path).into(imageView);
+            } catch (Exception e) {
+                //use default avatar
+                Glide.with(context).load(path).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(com.hyphenate.easeui.R.drawable.ease_group_icon).into(imageView);
+            }
+        }else{
+            Glide.with(context).load(com.hyphenate.easeui.R.drawable.ease_group_icon).into(imageView);
+        }
+    }
+
+    public static void setGroupAvatar(Context context, String hxid, ImageView imageView) {
+        if(hxid != null){
+            String path = getGroupAvatarPath(hxid,I.AVATAR_SUFFIX_JPG,hxid);
+            L.e("avatar path="+path);
+            try {
+                Glide.with(context).load(path).into(imageView);
+            } catch (Exception e) {
+                //use default avatar
+                Glide.with(context).load(path).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(com.hyphenate.easeui.R.drawable.ease_group_icon).into(imageView);
+            }
+        }else{
+            Glide.with(context).load(com.hyphenate.easeui.R.drawable.ease_group_icon).into(imageView);
         }
     }
 

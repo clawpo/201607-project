@@ -87,7 +87,7 @@ public class FrientProfileActivity extends BaseActivity {
     private void isFrient() {
         UserUtils.setUserNick(user.getMUserNick(), mTvUserinfoNick);
         UserUtils.setUserName(user.getMUserName(), mTvUserinfoName);
-        UserUtils.setAvatar(FrientProfileActivity.this, user, mProfileImage);
+        UserUtils.setUserAvatar(FrientProfileActivity.this, user, mProfileImage);
         if(SuperWeChatHelper.getInstance().getAppContactList().containsKey(user.getMUserName())){
             mBtnSendMsg.setVisibility(View.VISIBLE);
             mBtnSendVideo.setVisibility(View.VISIBLE);

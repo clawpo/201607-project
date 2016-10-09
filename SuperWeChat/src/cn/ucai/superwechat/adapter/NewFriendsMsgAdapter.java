@@ -111,7 +111,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 								UserAvatar user = (UserAvatar) result.getRetData();
 								if(user!=null){
 									UserUtils.setUserNick(user.getMUserNick(),holder.name);
-									UserUtils.setAvatar(context,user,holder.avator);
+									UserUtils.setUserAvatar(context,user,holder.avator);
 								}
 							}else{
 								holder.name.setText(msg.getFrom());
