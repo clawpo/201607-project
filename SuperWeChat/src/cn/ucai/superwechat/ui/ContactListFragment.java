@@ -241,7 +241,7 @@ public class ContactListFragment extends EaseContactListFragment {
             }
 			return true;
 		}
-		return super.onContextItemSelected(item);
+		return false;//super.onContextItemSelected(item);
 	}
 
 

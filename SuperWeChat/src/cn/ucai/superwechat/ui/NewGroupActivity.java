@@ -264,8 +264,6 @@ public class NewGroupActivity extends BaseActivity {
                 }else{
                     createGroupSuccess();
                 }
-                setResult(RESULT_OK);
-                finish();
             }else{
                 progressDialog.dismiss();
                 CommonUtils.showShortResultMsg(result!=null?result.getRetCode():R.string.toast_updatephoto_fail);

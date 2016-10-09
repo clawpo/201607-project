@@ -109,7 +109,7 @@ public class ConversationListFragment extends EaseConversationListFragment{
     
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.em_delete_message, menu); 
+        getActivity().getMenuInflater().inflate(R.menu.em_delete_message, menu);
     }
 
     @Override
@@ -119,6 +119,8 @@ public class ConversationListFragment extends EaseConversationListFragment{
             deleteMessage = true;
         } else if (item.getItemId() == R.id.delete_conversation) {
             deleteMessage = false;
+        } else {
+          return false;
         }
     	EMConversation tobeDeleteCons = conversationListView.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
     	if (tobeDeleteCons == null) {
