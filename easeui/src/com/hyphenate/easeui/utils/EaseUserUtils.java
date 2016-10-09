@@ -31,12 +31,28 @@ public class EaseUserUtils {
         return null;
     }
     
+    public static void setGroupAvatar(Context context, String hxid, ImageView imageView){
+    	String path = "http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?"+
+        "name_or_hxid="+hxid+"&avatarType=group_icon&m_avatar_suffix=.jpg&width=200&height=200";
+
+        if(path != null){
+            try {
+                Glide.with(context).load(path).into(imageView);
+            } catch (Exception e) {
+                //use default avatar
+                Glide.with(context).load(path).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_group_icon).into(imageView);
+            }
+        }else{
+            Glide.with(context).load(R.drawable.ease_group_icon).into(imageView);
+        }
+    }
+
     /**
      * set user avatar
      * @param username
      */
     public static void setUserAvatar(Context context, String username, ImageView imageView){
-    	EaseUser user = getUserInfo(username);
+        EaseUser user = getUserInfo(username);
         if(user != null && user.getAvatar() != null){
             try {
                 int avatarResId = Integer.parseInt(user.getAvatar());
