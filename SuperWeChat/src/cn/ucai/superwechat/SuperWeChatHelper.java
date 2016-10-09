@@ -660,6 +660,26 @@ public class SuperWeChatHelper {
             userDao.deleteContact(username);
             inviteMessgeDao.deleteMessage(username);
 
+            Map<String, UserAvatar> appLocalUsers = SuperWeChatHelper.getInstance().getAppContactList();
+            appLocalUsers.remove(username);
+            userDao.deleteAppContact(username);
+            OkHttpUtils<Result> utils = new OkHttpUtils<>(appContext);
+            utils.setRequestUrl(I.REQUEST_DELETE_CONTACT)
+                    .addParam(I.Contact.USER_NAME,getCurrentUsernName())
+                    .addParam(I.Contact.CU_NAME,username)
+                    .targetClass(Result.class)
+                    .execute(new OkHttpUtils.OnCompleteListener<Result>() {
+                        @Override
+                        public void onSuccess(Result result) {
+                            L.e("onContactDeleted","result="+result);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            L.e("onContactDeleted","error="+error);
+                        }
+                    });
+
             broadcastManager.sendBroadcast(new Intent(Constant.ACTION_CONTACT_CHANAGED));
         }
 

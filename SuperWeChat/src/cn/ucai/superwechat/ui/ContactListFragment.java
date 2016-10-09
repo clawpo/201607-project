@@ -39,7 +39,9 @@ import java.util.Map;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.SuperWeChatHelper.DataSyncListener;
+import cn.ucai.superwechat.bean.Result;
 import cn.ucai.superwechat.bean.UserAvatar;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.utils.L;
@@ -135,6 +137,7 @@ public class ContactListFragment extends EaseContactListFragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                L.e("deleteContact","deleteContact onItemClick");
                 EaseUser user = (EaseUser)listView.getItemAtPosition(position);
                 if (user != null) {
                     String username = user.getUsername();
@@ -214,15 +217,21 @@ public class ContactListFragment extends EaseContactListFragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+        L.e("deleteContact","deleteContact...position="+((AdapterContextMenuInfo) menuInfo).position);
 	    toBeProcessUser = (EaseUser) listView.getItemAtPosition(((AdapterContextMenuInfo) menuInfo).position);
 	    toBeProcessUsername = toBeProcessUser.getUsername();
-		getActivity().getMenuInflater().inflate(R.menu.em_context_contact_list, menu);
+		getActivity().getMenuInflater().inflate(R.menu.context_contact_list, menu);
 	}
 
-	@Override
+
+    @Override
 	public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        L.e("deleteContact","deleteContact...info="+info.targetView.getId());
+        L.e("deleteContact","deleteContact...item="+item.getItemId());
 		if (item.getItemId() == R.id.delete_contact) {
 			try {
+                L.e("deleteContact","deleteContact...");
                 // delete contact
                 deleteContact(toBeProcessUser);
                 // remove invitation message
@@ -232,12 +241,10 @@ public class ContactListFragment extends EaseContactListFragment {
                 e.printStackTrace();
             }
 			return true;
-		}else if(item.getItemId() == R.id.add_to_blacklist){
-			moveToBlacklist(toBeProcessUsername);
-			return true;
 		}
-		return super.onContextItemSelected(item);
+		return true;//super.onContextItemSelected(item);
 	}
+
 
 
 	/**
@@ -246,12 +253,26 @@ public class ContactListFragment extends EaseContactListFragment {
 	 * @param tobeDeleteUser
 	 */
 	public void deleteContact(final EaseUser tobeDeleteUser) {
+        L.e("deleteContact","deleteContact...");
 		String st1 = getResources().getString(R.string.deleting);
 		final String st2 = getResources().getString(R.string.Delete_failed);
 		final ProgressDialog pd = new ProgressDialog(getActivity());
 		pd.setMessage(st1);
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
+        UserUtils.deleteContact(getActivity(), SuperWeChatHelper.getInstance().getCurrentUsernName(),
+                tobeDeleteUser.getUsername(), new OkHttpUtils.OnCompleteListener<Result>() {
+                    @Override
+                    public void onSuccess(Result result) {
+                        L.e("deleteContact","result="+result);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        L.e("deleteContact","error="+error);
+							pd.dismiss();
+                    }
+                });
 		new Thread(new Runnable() {
 			public void run() {
 				try {

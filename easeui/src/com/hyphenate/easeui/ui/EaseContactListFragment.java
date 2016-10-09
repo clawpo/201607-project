@@ -13,7 +13,6 @@
  */
 package com.hyphenate.easeui.ui;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -30,7 +29,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
@@ -39,7 +37,6 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseContactList;
-import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,42 +167,42 @@ public class EaseContactListFragment extends EaseBaseFragment {
     }
 
 
-    /**
-     * move user to blacklist
-     */
-    protected void moveToBlacklist(final String username){
-        final ProgressDialog pd = new ProgressDialog(getActivity());
-        String st1 = getResources().getString(R.string.Is_moved_into_blacklist);
-        final String st2 = getResources().getString(R.string.Move_into_blacklist_success);
-        final String st3 = getResources().getString(R.string.Move_into_blacklist_failure);
-        pd.setMessage(st1);
-        pd.setCanceledOnTouchOutside(false);
-        pd.show();
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    //move to blacklist
-                    EMClient.getInstance().contactManager().addUserToBlackList(username,false);
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            pd.dismiss();
-                            Toast.makeText(getActivity(), st2, Toast.LENGTH_SHORT).show();
-                            refresh();
-                        }
-                    });
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            pd.dismiss();
-                            Toast.makeText(getActivity(), st3, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-        }).start();
-        
-    }
+//    /**
+//     * move user to blacklist
+//     */
+//    protected void moveToBlacklist(final String username){
+//        final ProgressDialog pd = new ProgressDialog(getActivity());
+//        String st1 = getResources().getString(R.string.Is_moved_into_blacklist);
+//        final String st2 = getResources().getString(R.string.Move_into_blacklist_success);
+//        final String st3 = getResources().getString(R.string.Move_into_blacklist_failure);
+//        pd.setMessage(st1);
+//        pd.setCanceledOnTouchOutside(false);
+//        pd.show();
+//        new Thread(new Runnable() {
+//            public void run() {
+//                try {
+//                    //move to blacklist
+//                    EMClient.getInstance().contactManager().addUserToBlackList(username,false);
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        public void run() {
+//                            pd.dismiss();
+//                            Toast.makeText(getActivity(), st2, Toast.LENGTH_SHORT).show();
+//                            refresh();
+//                        }
+//                    });
+//                } catch (HyphenateException e) {
+//                    e.printStackTrace();
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        public void run() {
+//                            pd.dismiss();
+//                            Toast.makeText(getActivity(), st3, Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//            }
+//        }).start();
+//
+//    }
     
     // refresh ui
     public void refresh() {
@@ -240,7 +237,8 @@ public class EaseContactListFragment extends EaseBaseFragment {
                 if (!entry.getKey().equals("item_new_friends")
                         && !entry.getKey().equals("item_groups")
                         && !entry.getKey().equals("item_chatroom")
-                        && !entry.getKey().equals("item_robots")){
+                        && !entry.getKey().equals("item_robots")
+                        && !entry.getKey().equals(EMClient.getInstance().getCurrentUser())){
                     if(!blackList.contains(entry.getKey())){
                         //filter out users in blacklist
                         EaseUser user = entry.getValue();
