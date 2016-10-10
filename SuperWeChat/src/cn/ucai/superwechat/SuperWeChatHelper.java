@@ -225,6 +225,20 @@ public class SuperWeChatHelper {
             public EaseUser getUser(String username) {
                 return getUserInfo(username);
             }
+
+            public UserAvatar getUserAvatar(String username){
+                return UserUtils.getUserInfo(username);
+            }
+            @Override
+            public String getUserAvatarNick(String username){
+                L.e("helper","username="+username);
+                return getUserAvatar(username)==null?username:getUserAvatar(username).getMUserNick();
+            }
+            @Override
+            public String getUserAvatarPath(String username){
+                return getUserAvatar(username)==null?UserUtils.getUserAvatarPath(username):
+                        UserUtils.getUserAvatar(getUserAvatar(username));
+            }
         });
 
         //set options 

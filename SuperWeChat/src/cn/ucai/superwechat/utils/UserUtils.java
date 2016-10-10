@@ -32,8 +32,10 @@ public class UserUtils {
     public static UserAvatar getUserInfo(String username){
         if(username==null || username.equals(SuperWeChatHelper.getInstance().getCurrentUsernName())){
             return SuperWeChatHelper.getInstance().getCurrentUserAvatar();
+        }else{
+            return SuperWeChatHelper.getInstance().getAppContactList().get(username);
         }
-        return null;
+//        return null;
     }
 
     public static void setText(String values, TextView textView){
@@ -73,6 +75,12 @@ public class UserUtils {
         return null;
     }
 
+    public static String getUserAvatarPath(String username){
+        //http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?
+        // name_or_hxid=a952700&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
+        return getAvatarPath(username,".jpg",username,I.AVATAR_TYPE_USER_PATH);
+    }
+
     public static String getUserAvatarPath(String username, String suffix, String updateTime){
         //http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?
         // name_or_hxid=a952700&avatarType=user_avatar&m_avatar_suffix=.jpg&width=200&height=200
@@ -100,7 +108,11 @@ public class UserUtils {
     public static void setUserAvatar(Context context, String username, ImageView imageView){
         L.e("setUserAvatar username="+username);
         UserAvatar user = getUserInfo(username);
-        setUserAvatar(context,user,imageView);
+        if(user!=null) {
+            setUserAvatar(context, user, imageView);
+        }else{
+            Glide.with(context).load(getUserAvatarPath(username)).placeholder(com.hyphenate.easeui.R.drawable.ease_default_avatar).into(imageView);
+        }
     }
 
     public static void setUserAvatar(Context context, UserAvatar user, ImageView imageView) {
@@ -210,6 +222,14 @@ public class UserUtils {
             letter = new GetInitialLetter().getLetter(user.getMUserName());
         }
         user.setInitialLetter(letter);
+    }
+
+    public static void asyncGetUserInfo(final Context context,String username,OkHttpUtils.OnCompleteListener<String> listener){
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_FIND_USER)
+                .addParam(I.User.USER_NAME,username)
+                .targetClass(String.class)
+                .execute(listener);
     }
 
     public static void asyncGetCurrentUserInfo(final Context context){

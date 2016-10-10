@@ -246,6 +246,10 @@ public final class EaseUI {
          * @return
          */
         EaseUser getUser(String username);
+
+        String getUserAvatarNick(String username);
+
+        String getUserAvatarPath(String username);
     }
     
     /**
