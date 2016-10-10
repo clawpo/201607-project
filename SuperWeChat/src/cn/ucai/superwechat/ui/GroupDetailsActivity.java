@@ -13,24 +13,6 @@
  */
 package cn.ucai.superwechat.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.hyphenate.EMGroupChangeListener;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMConversation.EMConversationType;
-import com.hyphenate.chat.EMGroup;
-import cn.ucai.superwechat.R;
-import com.hyphenate.easeui.utils.EaseUserUtils;
-import com.hyphenate.easeui.widget.EaseAlertDialog;
-import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
-import com.hyphenate.easeui.widget.EaseExpandGridView;
-import com.hyphenate.easeui.widget.EaseSwitchButton;
-import com.hyphenate.exceptions.HyphenateException;
-import com.hyphenate.util.EMLog;
-import com.hyphenate.util.NetUtils;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +33,26 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hyphenate.EMGroupChangeListener;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMConversation.EMConversationType;
+import com.hyphenate.chat.EMGroup;
+import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.widget.EaseAlertDialog;
+import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
+import com.hyphenate.easeui.widget.EaseExpandGridView;
+import com.hyphenate.easeui.widget.EaseSwitchButton;
+import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.EMLog;
+import com.hyphenate.util.NetUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class GroupDetailsActivity extends BaseActivity implements OnClickListener {
 	private static final String TAG = "GroupDetailsActivity";
@@ -609,7 +611,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 //				avatar.setBounds(0, 0, referenceWidth, referenceHeight);
 //				button.setCompoundDrawables(null, avatar, null, null);
 				EaseUserUtils.setUserNick(username, holder.textView);
-				EaseUserUtils.setUserAvatar(getContext(), username, holder.imageView);
+				UserUtils.setUserAvatar(getContext(), username, holder.imageView);
 				if (isInDeleteMode) {
 					// 如果是删除模式下，显示减人图标
 					convertView.findViewById(R.id.badge_delete).setVisibility(View.VISIBLE);
